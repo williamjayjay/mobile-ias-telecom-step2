@@ -1,18 +1,18 @@
 <h1 align="center">App IAS Telecom</h1>
 
 <p align="center">
-  <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/williamjayjay/mobile-ias-telecom">
+  <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/williamjayjay/mobile-ias-telecom-step2">
 
-  <img alt="GitHub Top Language" src="https://img.shields.io/github/languages/top/williamjayjay/mobile-ias-telecom" />
+  <img alt="GitHub Top Language" src="https://img.shields.io/github/languages/top/williamjayjay/mobile-ias-telecom-step2" />
 
-  <img alt="Repository size" src="https://img.shields.io/github/repo-size/williamjayjay/mobile-ias-telecom">
+  <img alt="Repository size" src="https://img.shields.io/github/repo-size/williamjayjay/mobile-ias-telecom-step2">
 
   <a href="https://github.com/williamjayjay/Github-Blog/commits/master">
-    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/williamjayjay/mobile-ias-telecom">
+    <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/williamjayjay/mobile-ias-telecom-step2">
   </a>
 
-   <a href="https://github.com/williamjayjay/mobile-ias-telecom/stargazers">
-    <img alt="Stargazers" src="https://img.shields.io/github/stars/williamjayjay/mobile-ias-telecom?style=social">
+   <a href="https://github.com/williamjayjay/mobile-ias-telecom-step2/stargazers">
+    <img alt="Stargazers" src="https://img.shields.io/github/stars/williamjayjay/mobile-ias-telecom-step2?style=social">
   </a>
 </p>
 
@@ -80,10 +80,10 @@ Para garantir o funcionamento adequado da nossa aplicação, verifique abaixo:
 1. **Clone o repositório**:
 
 ```sh
-git clone https://github.com/williamjayjay/mobile-ias-telecom
+git clone https://github.com/williamjayjay/mobile-ias-telecom-step2
 ```
 
-2. **Navegue na raiz do projeto mobile-ias-telecom:**
+2. **Navegue na raiz do projeto mobile-ias-telecom-step2:**
 
 3. **Instale os módulos:**
 

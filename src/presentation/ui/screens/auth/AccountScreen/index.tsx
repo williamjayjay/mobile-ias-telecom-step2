@@ -1,4 +1,3 @@
-import { useStorageStore } from '@/core/stores/usersStore';
 import { ListItem } from '@/presentation/ui/components/ListItemCustom';
 import { SafeAreaContainer } from '@/presentation/ui/components/SafeAreaContainer';
 import { TextCustom } from '@/presentation/ui/components/TextCustom';
@@ -7,7 +6,7 @@ import { theme } from '@/presentation/ui/styles/colorsTheme';
 import { ChevronRight } from 'lucide-react-native';
 import React from 'react';
 import { View, ScrollView, Alert } from 'react-native';
-
+import Constants from 'expo-constants';
 export function AccountScreen() {
 
   const { contextUserData, logoutUser } = useAuth();
@@ -20,57 +19,7 @@ export function AccountScreen() {
     }
   };
 
-  console.log("caaaontextUserData", contextUserData)
-
-  const {
-    removeAuthorizedState,
-    getAuthorizedState,
-    getUserData,
-    clearUserData,
-    getUsersData
-  } = useStorageStore();
-
-  const [auth, setAuth] = React.useState<string | null>(null);
-
-  // React.useEffect(() => {
-  //   const loadAuthState = async () => {
-  //     try {
-  //       const state = await getAuthorizedState();
-
-  //       const ALLSTATE = await getUsersData();
-
-  //       console.log("ALLSTATE", ALLSTATE)
-
-  //       if (!state) {
-  //         setUnAuthrotized();
-  //         return;
-  //       }
-  //       console.log("USERIDstate", state)
-
-  //       const userData = await getUserData(state);
-
-  //       console.log("userDatasuserData", userData)
-
-  //       if (!userData) {
-  //         setUnAuthrotized();
-  //         return;
-  //       }
-
-  //       console.log("userDatauserData2222", userData)
-
-
-
-  //       setAuth(state);
-  //     } catch (error) {
-  //       console.error('Error loading auth state:', error);
-  //     }
-  //   };
-
-  //   loadAuthState();
-  // }, []);
-
-
-  const versionApp = 'v1.0.0 (1)'
+  const appVersion = `v${Constants.expoConfig?.version}` || 'Unknown';
 
   return (
     <SafeAreaContainer
@@ -193,7 +142,7 @@ export function AccountScreen() {
             textAlign: "center",
           }}
         >
-          {versionApp}
+          {appVersion}
         </TextCustom>
       </ScrollView>
 

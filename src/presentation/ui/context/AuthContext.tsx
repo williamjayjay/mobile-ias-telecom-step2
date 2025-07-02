@@ -1,18 +1,27 @@
-import { USER_AUTHORIZED } from '@/core/constants/contexts';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { TokenResultRawResponse } from '../screens/public/WelcomeScreen/types';
+import { TokenResultRawResponse } from '@/presentation/ui/screens/public/WelcomeScreen/types';
+import { useStorageStore } from '@/core/stores/usersStore';
+
+interface UserData {
+  user: TokenResultRawResponse;
+  tasks: any[]; // Replace 'any' with your task type if defined
+}
 
 interface AuthContextType {
-  isAuthenticated: boolean | null;
-  setAuthrotized: () => void;
-  setUnAuthrotized: () => void;
-  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean | null>>;
-  userAuthorizedState: string | undefined;
-  appIsReady: boolean;
-  setAppIsReady: React.Dispatch<React.SetStateAction<boolean>>;
-  user: TokenResultRawResponse | null;
-  setSaveDataUser: (user: TokenResultRawResponse) => void;
+  authorizedState: string | null;
+  users: UserData[] | null;
+  contextUserData: UserData | null;
+  userTasks: any[];
+  setAuthorizedState: (state: string) => Promise<void>;
+  setUserData: (user: TokenResultRawResponse) => Promise<void>;
+  setUserTasks: (userId: string, tasks: any[]) => Promise<void>;
+  addUserTask: (userId: string, task: any) => Promise<void>;
+  removeUserTask: (userId: string, taskId: string) => Promise<void>;
+  removeAuthorizedState: () => Promise<void>;
+  clearUserData: () => Promise<void>;
+  deviceAuthorizedLocalState: string | null
+  setDeviceAuthorizedLocalState: (state: string | null) => void
+  logoutUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,80 +29,104 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const AuthProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
-  const [userAuthorizedState, setUserAuthorizedState] = useState<string | undefined>(undefined);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [appIsReady, setAppIsReady] = useState(false);
-  const [user, setUser] = useState<TokenResultRawResponse | null>(null);
+  const {
+    authorizedState,
+    users,
+    getAuthorizedState,
+    getUsersData,
+    getUserData,
+    getUserTasks,
+    setAuthorizedState,
+    setUserData,
+    setUserTasks,
+    addUserTask,
+    removeUserTask,
+    removeAuthorizedState,
+    clearUserData,
+  } = useStorageStore();
 
+  // Local state to store fetched data
+  const [contextAuthorizedState, setContextAuthorizedState] = useState<string | null>(authorizedState);
+
+  const [contextUsers, setContextUsers] = useState<UserData[] | null>(users);
+  const [contextUserData, setContextUserData] = useState<UserData | null>(null);
+
+  const [contextUserTasks, setContextUserTasks] = useState<any[]>([]);
+
+  const [deviceAuthorizedLocalState, setDeviceAuthorizedLocalState] = useState<string | null>(null);
+
+  // Fetch data on app startup
   useEffect(() => {
-    const loadAuthState = async () => {
+    console.log('Entrou aqui ')
+    const fetchInitialData = async () => {
+      console.log('fetchInitialData - started');
+
       try {
-        const storedAuth = await AsyncStorage.getItem(USER_AUTHORIZED);
+        // Fetch authorized state
+        console.log('fetchInitialData - fetching authorizedState');
+        const authState = await getAuthorizedState();
+        console.log('fetchInitialData - authorizedState:', authState);
+        setContextAuthorizedState(authState);
 
-        console.log('Stored auth state:', storedAuth);
+        // Fetch all users
+        console.log('fetchInitialData - fetching all users');
+        const usersData = await getUsersData();
+        console.log('fetchInitialData - fetched users:', usersData);
+        setContextUsers(usersData);
 
-        if (storedAuth !== null && isAuthenticated === null) {
-          setUserAuthorizedState(storedAuth);
-          setIsAuthenticated(true);
+        // Fetch user data and tasks for the logged-in user (if available)
+        if (authState) {
+          // Assuming authState contains or can be used to derive userId
+          // Replace with your logic to get the logged-in userId
+          const userId = authState; // Adjust based on how you store userId
+          console.log('fetchInitialData - fetching user data and tasks for userId:', userId);
+          if (userId) {
+            const user = await getUserData(userId);
+            console.log('fetchInitialData - fetched user data:', user);
+            setContextUserData(user);
 
-          const storedUser = await AsyncStorage.getItem('user');
-          if (storedUser !== null) {
-            setUser(JSON.parse(storedUser));
+            const tasks = await getUserTasks(userId);
+            console.log('fetchInitialData - fetched user tasks:', tasks);
+            setContextUserTasks(tasks);
           }
-
-        } else {
-          setIsAuthenticated(false);
         }
       } catch (error) {
-        console.error('Error loading auth state:', error);
-        setIsAuthenticated(false);
+        console.error('Error fetching initial data:', error);
       }
+
+      console.log('fetchInitialData - finished');
     };
 
-    loadAuthState();
-  }, []);
+    fetchInitialData();
+  }, [deviceAuthorizedLocalState]);
 
-  const setSaveDataUser = async (user: TokenResultRawResponse) => {
-    try {
-      setUser(user);
-      await AsyncStorage.setItem('user', JSON.stringify(user));
-    } catch (error) {
-      console.error('Error saving user data:', error);
-    }
-  };
+  const logoutUser = async () => {
+    setDeviceAuthorizedLocalState(null)
+    removeAuthorizedState()
 
-  const setAuthrotized = async () => {
-    try {
-      setIsAuthenticated(true);
-      setUserAuthorizedState('y');
-      await AsyncStorage.setItem(USER_AUTHORIZED, 'y');
-    } catch (error) {
-      console.error('Error setting authorized state:', error);
-    }
-  };
-
-  const setUnAuthrotized = async () => {
-    try {
-      setIsAuthenticated(null);
-      setUserAuthorizedState(undefined);
-      await AsyncStorage.removeItem(USER_AUTHORIZED);
-    } catch (error) {
-      console.error('Error setting unauthorized state:', error);
-    }
-  };
+    setContextAuthorizedState(null)
+    setContextUsers(null)
+    setContextUserData(null)
+    setContextUserTasks([])
+  }
 
   return (
     <AuthContext.Provider
       value={{
-        isAuthenticated,
-        setAuthrotized,
-        setUnAuthrotized,
-        setIsAuthenticated,
-        appIsReady,
-        setAppIsReady,
-        userAuthorizedState,
-        setSaveDataUser,
-        user
+        authorizedState: contextAuthorizedState,
+        users: contextUsers,
+        contextUserData,
+        userTasks: contextUserTasks,
+        setAuthorizedState,
+        setUserData,
+        setUserTasks,
+        addUserTask,
+        removeUserTask,
+        removeAuthorizedState,
+        clearUserData,
+        deviceAuthorizedLocalState,
+        setDeviceAuthorizedLocalState,
+        logoutUser
       }}
     >
       {children}
@@ -108,6 +141,5 @@ const useAuth = () => {
   }
   return context;
 };
-
 
 export { AuthProvider, useAuth };

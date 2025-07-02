@@ -1,3 +1,4 @@
+import { useStorageStore } from '@/core/stores/usersStore';
 import { ListItem } from '@/presentation/ui/components/ListItemCustom';
 import { SafeAreaContainer } from '@/presentation/ui/components/SafeAreaContainer';
 import { TextCustom } from '@/presentation/ui/components/TextCustom';
@@ -8,7 +9,67 @@ import React from 'react';
 import { View, ScrollView, Alert } from 'react-native';
 
 export function AccountScreen() {
-  const { setUnAuthrotized, user } = useAuth();
+
+  const { contextUserData, logoutUser } = useAuth();
+
+  const { user } = contextUserData || {
+    user: {
+      usuarioId: '',
+      usuarioNome: '',
+      login: ''
+    }
+  };
+
+  console.log("caaaontextUserData", contextUserData)
+
+  const {
+    removeAuthorizedState,
+    getAuthorizedState,
+    getUserData,
+    clearUserData,
+    getUsersData
+  } = useStorageStore();
+
+  const [auth, setAuth] = React.useState<string | null>(null);
+
+  // React.useEffect(() => {
+  //   const loadAuthState = async () => {
+  //     try {
+  //       const state = await getAuthorizedState();
+
+  //       const ALLSTATE = await getUsersData();
+
+  //       console.log("ALLSTATE", ALLSTATE)
+
+  //       if (!state) {
+  //         setUnAuthrotized();
+  //         return;
+  //       }
+  //       console.log("USERIDstate", state)
+
+  //       const userData = await getUserData(state);
+
+  //       console.log("userDatasuserData", userData)
+
+  //       if (!userData) {
+  //         setUnAuthrotized();
+  //         return;
+  //       }
+
+  //       console.log("userDatauserData2222", userData)
+
+
+
+  //       setAuth(state);
+  //     } catch (error) {
+  //       console.error('Error loading auth state:', error);
+  //     }
+  //   };
+
+  //   loadAuthState();
+  // }, []);
+
+
   const versionApp = 'v1.0.0 (1)'
 
   return (
@@ -88,7 +149,8 @@ export function AccountScreen() {
                 },
                 {
                   text: "Sair", onPress: () => {
-                    setUnAuthrotized()
+                    logoutUser()
+
                   }
                 }
               ]
@@ -105,6 +167,22 @@ export function AccountScreen() {
             />
           }
         />
+        {/*
+        <ListItem
+          onPress={() => {
+            clearUserData()
+          }}
+          marginTop={16}
+          title={'ZERAR'}
+          customTitleStyle={{ color: theme.signal.danger }}
+          rightIcon={
+            <ChevronRight
+              color={theme.text.primary}
+              size={22}
+              strokeWidth={1.5}
+            />
+          }
+        /> */}
 
         <TextCustom
           style={{

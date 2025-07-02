@@ -5,9 +5,12 @@ import { SCHEME_NAME_AUTH } from '@/core/constants/global';
 import { rootEnv } from '@/core/configs/env.config';
 import { useAuth } from '@/presentation/ui/context/AuthContext';
 import { TokenResultRawResponse } from './types';
+import { useStorageStore } from '@/core/stores/usersStore';
 
 export const useWelcomeHook = () => {
-  const { setAuthrotized, setSaveDataUser } = useAuth();
+
+  const { setDeviceAuthorizedLocalState } = useAuth();
+
   const { apiAuth, apiToken, clientId, clientSecret } = rootEnv;
 
   const discovery = {
@@ -16,6 +19,11 @@ export const useWelcomeHook = () => {
   };
 
   const redirectUri = AuthSession.makeRedirectUri({ scheme: SCHEME_NAME_AUTH });
+
+  const {
+    setAuthorizedState,
+    setUserData
+  } = useStorageStore();
 
   const handleLogin = async () => {
     try {
@@ -46,6 +54,7 @@ export const useWelcomeHook = () => {
 
         if (tokenResult.accessToken) {
           await AsyncStorage.setItem('access_token', tokenResult.accessToken);
+
           showMessageSuccess('Login bem-sucedido!');
 
           const {
@@ -56,15 +65,31 @@ export const useWelcomeHook = () => {
             usuarioNome
           }: TokenResultRawResponse = tokenResult.rawResponse ?? {};
 
-          setSaveDataUser({
+          setDeviceAuthorizedLocalState(usuarioId?.toString() ?? '');
+
+          await setAuthorizedState(usuarioId?.toString() ?? '');
+
+          setUserData({
             access_token,
             refresh_token,
             login,
             usuarioId,
             usuarioNome
-          })
+          });
 
-          setAuthrotized();
+          // setSaveDataUser({
+          //   id: usuarioId,
+          //   access_token,
+          //   refresh_token,
+          //   login,
+          //   usuarioId,
+          //   usuarioNome
+          // })
+
+
+
+          // setAuthrotized();
+
         } else {
           showMessageError('Falha ao obter o token de acesso.');
         }

@@ -1,16 +1,13 @@
 import React from "react";
-import { useWindowDimensions } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { CircleUser, List } from "lucide-react-native";
+import { CircleUser, List, SquarePlus } from "lucide-react-native";
 import { theme } from "@/presentation/ui/styles/colorsTheme";
 import { AccountScreen } from "@/presentation/ui/screens/auth/AccountScreen";
-import { HomeScreen } from "@/presentation/ui/screens/auth/HomeScreen";
+import { TaskListScreen } from "@/presentation/ui/screens/auth/ListTaskScreen";
+import { CreateTaskScreen } from "@/presentation/ui/screens/auth/CreateTaskScreen";
 
 const TabNavigator = createBottomTabNavigator();
 const TabRoutes = () => {
-  const { height } = useWindowDimensions();
-
-  const heightIsMajorOrEqual840 = height >= 840;
 
   return (
     <TabNavigator.Navigator
@@ -18,7 +15,7 @@ const TabRoutes = () => {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: true,
-        tabBarActiveTintColor: theme.primary.dark,
+        tabBarActiveTintColor: theme.primary.main,
         tabBarInactiveTintColor: theme.text.secondary,
         tabBarStyle: {
           backgroundColor: theme.shape.background,
@@ -30,7 +27,7 @@ const TabRoutes = () => {
     >
       <TabNavigator.Screen
         name="routeList"
-        component={HomeScreen}
+        component={TaskListScreen}
         options={{
           headerTitleStyle: {
             fontSize: 22,
@@ -40,6 +37,20 @@ const TabRoutes = () => {
           tabBarLabel: "Lista"
         }}
       />
+
+      <TabNavigator.Screen
+        name="routeCreateTask"
+        component={CreateTaskScreen}
+        options={{
+          headerTitleStyle: {
+            fontSize: 22,
+          },
+          headerTintColor: theme.shape.background,
+          tabBarIcon: ({ color }) => <SquarePlus size={22} color={color} />,
+          tabBarLabel: "Criar Tarefa"
+        }}
+      />
+
 
       <TabNavigator.Screen
         name="routeAccount"

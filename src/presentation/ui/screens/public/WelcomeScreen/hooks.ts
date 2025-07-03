@@ -99,6 +99,7 @@ export const useWelcomeHook = () => {
     } catch (error) {
       console.error('Erro no processo de login:', error);
       showMessageError('Ocorreu um erro durante o login.');
+      return false
     }
   };
 

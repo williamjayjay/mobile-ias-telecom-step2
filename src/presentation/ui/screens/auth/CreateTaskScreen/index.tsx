@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
-import { z } from 'zod';
+import { View, TextInput, Button, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 import uuid from 'react-native-uuid';
@@ -13,6 +12,8 @@ import { theme } from '@/presentation/ui/styles/colorsTheme';
 import { TaskStatus } from '@/core/enums/task';
 import { ITask } from '@/core/interfaces/tasks';
 import { TaskFormData, taskSchema } from '@/core/schemas/createTask';
+import { TextCustom } from '@/presentation/ui/components/TextCustom';
+import { showMessageError, showMessageSuccess } from '@/core/utils/messages-toast';
 
 export const CreateTaskScreen = () => {
 
@@ -60,12 +61,12 @@ export const CreateTaskScreen = () => {
       };
 
       await addUserTask(user.usuarioId.toString(), newTask);
-      Alert.alert('Sucesso', 'Tarefa criada com sucesso!');
+      showMessageSuccess('Tarefa criada com sucesso!');
       reset();
       navigation.goBack();
     } catch (error) {
       console.error('Error creating task:', error);
-      Alert.alert('Erro', 'Falha ao criar a tarefa');
+      showMessageError('Falha ao criar a tarefa');
     }
   };
 
@@ -76,50 +77,78 @@ export const CreateTaskScreen = () => {
       }}
     >
       <View style={styles.container}>
-        <Text style={styles.title}>Criar Nova Tarefa</Text>
+        <TextCustom style={styles.title}>Criar Nova Tarefa</TextCustom>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Título</Text>
           <Controller
             control={control}
             name="title"
             render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={styles.input}
-                placeholder="Digite o título da tarefa"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-              />
+              <>
+                <TextCustom style={[
+                  styles.label,
+                  { color: errors.title ? theme.signal.danger : theme.text.primary }
+                ]}>
+                  Título</TextCustom>
+                <TextInput
+                  allowFontScaling={false}
+                  style={[
+                    styles.input,
+                    errors.title && { borderColor: theme.signal.danger, borderWidth: 1 }
+                  ]}
+                  placeholder="Digite o título da tarefa"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              </>
+
             )}
           />
           {errors.title && (
-            <Text style={styles.error}>{errors.title.message}</Text>
+            <TextCustom style={styles.error}>{errors.title.message}</TextCustom>
           )}
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Descrição</Text>
           <Controller
             control={control}
             name="description"
             render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={[styles.input, styles.descriptionInput]}
-                placeholder="Digite a descrição da tarefa"
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-                multiline
-              />
+              <>
+                <TextCustom style={[
+                  styles.label,
+                  { color: errors.description ? theme.signal.danger : theme.text.primary }
+                ]}>
+                  Descrição</TextCustom>
+                <TextInput
+                  allowFontScaling={false}
+                  style={[
+                    styles.input,
+                    styles.descriptionInput,
+                    errors.description && { borderColor: theme.signal.danger, borderWidth: 1 }
+                  ]}
+                  placeholder="Digite a descrição da tarefa"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  multiline
+                />
+              </>
+
             )}
           />
           {errors.description && (
-            <Text style={styles.error}>{errors.description.message}</Text>
+            <TextCustom style={styles.error}>{errors.description.message}</TextCustom>
           )}
         </View>
 
-        <Button title="Criar Tarefa" onPress={handleSubmit(onSubmit)} />
+        <TouchableOpacity
+          style={{ backgroundColor: theme.primary.main, borderRadius: 4, height: 42, justifyContent: 'center', alignItems: 'center' }}
+          onPress={handleSubmit(onSubmit)}
+        >
+          <TextCustom style={{ color: theme.shape.surface, fontSize: 16, fontWeight: 'bold' }}>Criar Tarefa</TextCustom>
+        </TouchableOpacity>
       </View>
     </SafeAreaContainer>
 

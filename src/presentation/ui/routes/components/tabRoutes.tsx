@@ -5,6 +5,7 @@ import { theme } from "@/presentation/ui/styles/colorsTheme";
 import { AccountScreen } from "@/presentation/ui/screens/auth/AccountScreen";
 import { TaskListScreen } from "@/presentation/ui/screens/auth/ListTaskScreen";
 import { CreateTaskScreen } from "@/presentation/ui/screens/auth/CreateTaskScreen";
+import { TextCustom } from "@/presentation/ui/components/TextCustom";
 
 const TabNavigator = createBottomTabNavigator();
 const TabRoutes = () => {
@@ -34,7 +35,11 @@ const TabRoutes = () => {
           },
           headerTintColor: theme.shape.background,
           tabBarIcon: ({ color }) => <List size={22} color={color} />,
-          tabBarLabel: "Lista"
+          tabBarLabel: ({ color }) => (
+            <TextCustom style={{ fontSize: 12, color }} allowFontScaling={false}>
+              Lista
+            </TextCustom>
+          ),
         }}
       />
 
@@ -47,10 +52,13 @@ const TabRoutes = () => {
           },
           headerTintColor: theme.shape.background,
           tabBarIcon: ({ color }) => <SquarePlus size={22} color={color} />,
-          tabBarLabel: "Criar Tarefa"
+          tabBarLabel: ({ color }) => (
+            <TextCustom style={{ fontSize: 12, color }} allowFontScaling={false}>
+              Criar Tarefa
+            </TextCustom>
+          ),
         }}
       />
-
 
       <TabNavigator.Screen
         name="routeAccount"
@@ -61,7 +69,11 @@ const TabRoutes = () => {
           },
           headerTintColor: theme.shape.background,
           tabBarIcon: ({ color }) => <CircleUser size={22} color={color} />,
-          tabBarLabel: "Conta"
+          tabBarLabel: ({ color }) => (
+            <TextCustom style={{ fontSize: 12, color }} allowFontScaling={false}>
+              Conta
+            </TextCustom>
+          ),
         }}
       />
     </TabNavigator.Navigator>

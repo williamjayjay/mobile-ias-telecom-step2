@@ -1,21 +1,22 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { TokenResultRawResponse } from '@/presentation/ui/screens/public/WelcomeScreen/types';
 import { useStorageStore } from '@/core/stores/usersStore';
+import { ITask } from '@/core/interfaces/tasks';
 
 interface UserData {
   user: TokenResultRawResponse;
-  tasks: any[]; // Replace 'any' with your task type if defined
+  tasks: ITask[];
 }
 
 interface AuthContextType {
   authorizedState: string | null;
   users: UserData[] | null;
   contextUserData: UserData | null;
-  userTasks: any[];
+  userTasks: ITask[];
   setAuthorizedState: (state: string) => Promise<void>;
   setUserData: (user: TokenResultRawResponse) => Promise<void>;
-  setUserTasks: (userId: string, tasks: any[]) => Promise<void>;
-  addUserTask: (userId: string, task: any) => Promise<void>;
+  setUserTasks: (userId: string, tasks: ITask[]) => Promise<void>;
+  addUserTask: (userId: string, task: ITask) => Promise<void>;
   removeUserTask: (userId: string, taskId: string) => Promise<void>;
   removeAuthorizedState: () => Promise<void>;
   clearUserData: () => Promise<void>;
@@ -45,34 +46,27 @@ const AuthProvider: React.FC<{
     clearUserData,
   } = useStorageStore();
 
-  // Local state to store fetched data
   const [contextAuthorizedState, setContextAuthorizedState] = useState<string | null>(authorizedState);
 
   const [contextUsers, setContextUsers] = useState<UserData[] | null>(users);
   const [contextUserData, setContextUserData] = useState<UserData | null>(null);
 
-  const [contextUserTasks, setContextUserTasks] = useState<any[]>([]);
+  const [contextUserTasks, setContextUserTasks] = useState<ITask[]>([]);
 
   const [deviceAuthorizedLocalState, setDeviceAuthorizedLocalState] = useState<string | null>(null);
 
-  // Fetch data on app startup
   useEffect(() => {
     const fetchInitialData = async () => {
 
       try {
-        // Fetch authorized state
         const authState = await getAuthorizedState();
         setContextAuthorizedState(authState);
 
-        // Fetch all users
         const usersData = await getUsersData();
         setContextUsers(usersData);
 
-        // Fetch user data and tasks for the logged-in user (if available)
         if (authState) {
-          // Assuming authState contains or can be used to derive userId
-          // Replace with your logic to get the logged-in userId
-          const userId = authState; // Adjust based on how you store userId
+          const userId = authState;
           if (userId) {
             const user = await getUserData(userId);
             setContextUserData(user);

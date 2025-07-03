@@ -39,8 +39,6 @@ export const useWelcomeHook = () => {
       if (authorizeResult.type === 'success') {
         const code = authorizeResult.params.code;
 
-        console.log('authorizeResult', authorizeResult)
-
         const tokenResult = await AuthSession.exchangeCodeAsync(
           {
             clientId,

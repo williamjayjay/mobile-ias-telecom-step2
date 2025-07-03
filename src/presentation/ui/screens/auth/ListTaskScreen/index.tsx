@@ -6,6 +6,7 @@ import { SafeAreaContainer } from '@/presentation/ui/components/SafeAreaContaine
 import { ITask } from '@/core/interfaces/tasks';
 import { Ionicons } from '@expo/vector-icons';
 import { TextCustom } from '@/presentation/ui/components/TextCustom';
+import { CircleCheckBig, Trash2 } from 'lucide-react-native';
 
 export const TaskListScreen = () => {
   const { userTasks } = useAuth();
@@ -26,6 +27,14 @@ export const TaskListScreen = () => {
   const TaskItem = ({ item }: { item: ITask }) => {
     const [isDescriptionVisible, setDescriptionVisible] = useState(false);
 
+    const handleDeleteTask = () => {
+      // Empty function for delete action
+    };
+
+    const handleCompleteTask = () => {
+      // Empty function for complete action
+    };
+
     return (
       <View style={styles.taskContainer}>
         <View style={styles.taskHeader}>
@@ -45,10 +54,29 @@ export const TaskListScreen = () => {
           </TextCustom>
         </TextCustom>
         <TextCustom style={styles.taskCreatedAt}>
-          Criado em: {new Date(item.createdAt).toLocaleDateString('pt-BR')}
+          Criado em: {new Date(item.createdAt).toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
         </TextCustom>
         {isDescriptionVisible && (
-          <TextCustom style={styles.taskDescription}>{item.description}</TextCustom>
+          <View style={styles.expandedContent}>
+            <TextCustom style={styles.taskDescription}>{item.description}</TextCustom>
+            <View style={styles.buttonContainer}>
+
+              <TouchableOpacity style={styles.button} onPress={handleCompleteTask}>
+
+                <CircleCheckBig size={24} color={theme.signal.success} />
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.button} onPress={handleDeleteTask}>
+                <Trash2 size={24} color={theme.signal.danger} />
+              </TouchableOpacity>
+            </View>
+          </View>
         )}
       </View>
     );
@@ -131,6 +159,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#4b5563',
     marginTop: 8,
+    marginBottom: 12,
   },
   taskStatus: {
     fontSize: 14,
@@ -139,6 +168,29 @@ const styles = StyleSheet.create({
   taskCreatedAt: {
     fontSize: 14,
     color: '#6b7280',
+  },
+  expandedContent: {
+    marginTop: 8,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 16,
+  },
+  button: {
+    borderRadius: 6,
+    height: 38,
+    width: 52,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: 'rgba(107,114,128,0.5)',
+    borderWidth: 1,
+  },
+
+  buttonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
   emptyText: {
     fontSize: 16,

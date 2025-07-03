@@ -57,21 +57,15 @@ const AuthProvider: React.FC<{
 
   // Fetch data on app startup
   useEffect(() => {
-    console.log('Entrou aqui ')
     const fetchInitialData = async () => {
-      console.log('fetchInitialData - started');
 
       try {
         // Fetch authorized state
-        console.log('fetchInitialData - fetching authorizedState');
         const authState = await getAuthorizedState();
-        console.log('fetchInitialData - authorizedState:', authState);
         setContextAuthorizedState(authState);
 
         // Fetch all users
-        console.log('fetchInitialData - fetching all users');
         const usersData = await getUsersData();
-        console.log('fetchInitialData - fetched users:', usersData);
         setContextUsers(usersData);
 
         // Fetch user data and tasks for the logged-in user (if available)
@@ -79,14 +73,11 @@ const AuthProvider: React.FC<{
           // Assuming authState contains or can be used to derive userId
           // Replace with your logic to get the logged-in userId
           const userId = authState; // Adjust based on how you store userId
-          console.log('fetchInitialData - fetching user data and tasks for userId:', userId);
           if (userId) {
             const user = await getUserData(userId);
-            console.log('fetchInitialData - fetched user data:', user);
             setContextUserData(user);
 
             const tasks = await getUserTasks(userId);
-            console.log('fetchInitialData - fetched user tasks:', tasks);
             setContextUserTasks(tasks);
           }
         }
@@ -94,7 +85,6 @@ const AuthProvider: React.FC<{
         console.error('Error fetching initial data:', error);
       }
 
-      console.log('fetchInitialData - finished');
     };
 
     fetchInitialData();

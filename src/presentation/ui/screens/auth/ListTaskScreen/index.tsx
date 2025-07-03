@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Animated } from 'react-native';
 import { useAuth } from '@/presentation/ui/context/AuthContext';
 import { theme } from '@/presentation/ui/styles/colorsTheme';
 import { SafeAreaContainer } from '@/presentation/ui/components/SafeAreaContainer';
@@ -10,6 +10,42 @@ import { CircleCheckBig, Trash2 } from 'lucide-react-native';
 
 export const TaskListScreen = () => {
   const { userTasks } = useAuth();
+  const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [actionBarAnim] = useState(new Animated.Value(0));
+
+  const toggleSelectionMode = () => {
+    if (isSelectionMode) {
+      setSelectedTasks([]);
+    }
+    setIsSelectionMode(!isSelectionMode);
+    Animated.timing(actionBarAnim, {
+      toValue: isSelectionMode ? 0 : 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const toggleTaskSelection = (taskId: string) => {
+    if (selectedTasks.includes(taskId)) {
+      setSelectedTasks(selectedTasks.filter(id => id !== taskId));
+      if (selectedTasks.length === 1) {
+        toggleSelectionMode();
+      }
+    } else {
+      setSelectedTasks([...selectedTasks, taskId]);
+    }
+  };
+
+  const handleBulkComplete = () => {
+    console.log('Completing tasks:', selectedTasks);
+    toggleSelectionMode();
+  };
+
+  const handleBulkDelete = () => {
+    console.log('Deleting tasks:', selectedTasks);
+    toggleSelectionMode();
+  };
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -26,59 +62,99 @@ export const TaskListScreen = () => {
 
   const TaskItem = ({ item }: { item: ITask }) => {
     const [isDescriptionVisible, setDescriptionVisible] = useState(false);
+    const scaleAnim = useState(new Animated.Value(1))[0];
+
+    const handleLongPress = () => {
+      if (!isSelectionMode) {
+        toggleSelectionMode();
+      }
+      toggleTaskSelection(item.id);
+      Animated.sequence([
+        Animated.timing(scaleAnim, {
+          toValue: 0.95,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scaleAnim, {
+          toValue: 1,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    };
+
+    const handlePress = () => {
+      if (isSelectionMode) {
+        toggleTaskSelection(item.id);
+      } else {
+        setDescriptionVisible(!isDescriptionVisible);
+      }
+    };
 
     const handleDeleteTask = () => {
-      // Empty function for delete action
+      console.log('Deleting task:', item.id);
     };
 
     const handleCompleteTask = () => {
-      // Empty function for complete action
+      console.log('Completing task:', item.id);
     };
 
     return (
-      <View style={styles.taskContainer}>
-        <View style={styles.taskHeader}>
-          <TextCustom style={styles.taskTitle}>{item.title}</TextCustom>
-          <TouchableOpacity onPress={() => setDescriptionVisible(!isDescriptionVisible)}>
-            <Ionicons
-              name={isDescriptionVisible ? 'chevron-up' : 'chevron-down'}
-              size={24}
-              color={theme.text.primary}
-            />
-          </TouchableOpacity>
-        </View>
-        <TextCustom style={[styles.taskStatus]}>
-          Status:
-          <TextCustom style={getStatusStyle(item.status)}>
-            {" "}{item.status}
-          </TextCustom>
-        </TextCustom>
-        <TextCustom style={styles.taskCreatedAt}>
-          Criado em: {new Date(item.createdAt).toLocaleString('pt-BR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-          })}
-        </TextCustom>
-        {isDescriptionVisible && (
-          <View style={styles.expandedContent}>
-            <TextCustom style={styles.taskDescription}>{item.description}</TextCustom>
-            <View style={styles.buttonContainer}>
-
-              <TouchableOpacity style={styles.button} onPress={handleCompleteTask}>
-
-                <CircleCheckBig size={24} color={theme.signal.success} />
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.button} onPress={handleDeleteTask}>
-                <Trash2 size={24} color={theme.signal.danger} />
-              </TouchableOpacity>
-            </View>
+      <Animated.View style={[styles.taskContainer, {
+        transform: [{ scale: scaleAnim }],
+        backgroundColor: selectedTasks.includes(item.id) ? theme.shape.surface : '#fff',
+      }]}>
+        <TouchableOpacity
+          onPress={handlePress}
+          onLongPress={handleLongPress}
+          activeOpacity={0.7}
+        >
+          <View style={styles.taskHeader}>
+            <TextCustom style={styles.taskTitle}>{item.title}</TextCustom>
+            {!isSelectionMode && (
+              <Ionicons
+                name={isDescriptionVisible ? 'chevron-up' : 'chevron-down'}
+                size={24}
+                color={theme.text.primary}
+              />
+            )}
+            {isSelectionMode && (
+              <Ionicons
+                name={selectedTasks.includes(item.id) ? 'checkbox' : 'square-outline'}
+                size={24}
+                color={theme.primary.main}
+              />
+            )}
           </View>
-        )}
-      </View>
+          <TextCustom style={styles.taskStatus}>
+            Status: <TextCustom style={getStatusStyle(item.status)}> {item.status}</TextCustom>
+          </TextCustom>
+          <TextCustom style={styles.taskCreatedAt}>
+            Criado em: {new Date(item.createdAt).toLocaleString('pt-BR', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+          </TextCustom>
+          {isDescriptionVisible && !isSelectionMode && (
+            <View style={styles.expandedContent}>
+              <TextCustom style={styles.taskDescription}>{item.description}</TextCustom>
+              <View style={styles.buttonContainer}>
+
+                <TouchableOpacity style={styles.button} onPress={handleCompleteTask}>
+                  <CircleCheckBig size={24} color={theme.signal.success} />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.button} onPress={handleDeleteTask}>
+                  <Trash2 size={24} color={theme.signal.danger} />
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+        </TouchableOpacity>
+      </Animated.View>
     );
   };
 
@@ -107,7 +183,14 @@ export const TaskListScreen = () => {
         }}
       >
         <View style={styles.container}>
-          <TextCustom style={styles.title}>Minhas Tarefas</TextCustom>
+          <View style={styles.headerContainer}>
+            <TextCustom style={styles.title}>Minhas Tarefas2</TextCustom>
+            {isSelectionMode && (
+              <TouchableOpacity onPress={toggleSelectionMode}>
+                <TextCustom style={styles.cancelButton}>Cancelar</TextCustom>
+              </TouchableOpacity>
+            )}
+          </View>
           <FlatList
             showsVerticalScrollIndicator={false}
             data={userTasks}
@@ -118,6 +201,48 @@ export const TaskListScreen = () => {
               <TextCustom style={styles.emptyText}>Nenhuma tarefa encontrada</TextCustom>
             }
           />
+          {isSelectionMode && (
+            <Animated.View style={[styles.actionBar, {
+              opacity: actionBarAnim,
+              transform: [{
+                translateY: actionBarAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [100, 0],
+                }),
+              }],
+            }]}>
+              <TextCustom style={styles.selectedCount}>
+                {selectedTasks.length} selecionada{selectedTasks.length !== 1 ? 's' : ''}
+              </TextCustom>
+              <View style={styles.actionButtons}>
+
+
+                <TouchableOpacity
+                  disabled={selectedTasks.length === 0}
+                  style={[styles.button, {
+                    opacity: selectedTasks.length === 0 ? 0.5 : 1
+                  }]}
+                  onPress={handleBulkComplete}>
+
+                  <CircleCheckBig size={24} color={theme.signal.success} />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  disabled={selectedTasks.length === 0}
+                  style={[
+                    styles.button,
+                    {
+                      opacity: selectedTasks.length === 0 ? 0.5 : 1
+                    }
+                  ]}
+                  onPress={handleBulkDelete}>
+
+                  <Trash2 size={24} color={theme.signal.danger} />
+                </TouchableOpacity>
+
+              </View>
+            </Animated.View>
+          )}
         </View>
       </SafeAreaContainer>
     </>
@@ -128,10 +253,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 16,
+  },
+  cancelButton: {
+    fontSize: 16,
+    color: theme.signal.danger,
+    fontWeight: '600',
   },
   list: {
     flex: 1,
@@ -143,6 +278,11 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     borderWidth: 1,
     borderColor: '#d1d5db',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   taskHeader: {
     flexDirection: 'row',
@@ -186,16 +326,42 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(107,114,128,0.5)',
     borderWidth: 1,
   },
-
-  buttonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
   emptyText: {
     fontSize: 16,
     textAlign: 'center',
     marginTop: 20,
     color: '#6b7280',
+  },
+  actionBar: {
+    backgroundColor: theme.shape.background,
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#d1d5db',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  selectedCount: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.text.primary,
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    gap: 8,
+    opacity: 0.9,
+  },
+  actionButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

@@ -1,18 +1,28 @@
-import { USER_AUTHORIZED } from '@/core/constants/contexts';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { TokenResultRawResponse } from '../screens/public/WelcomeScreen/types';
+import { TokenResultRawResponse } from '@/presentation/ui/screens/public/WelcomeScreen/types';
+import { useStorageStore } from '@/core/stores/usersStore';
+import { ITask } from '@/core/interfaces/tasks';
+
+interface UserData {
+  user: TokenResultRawResponse;
+  tasks: ITask[];
+}
 
 interface AuthContextType {
-  isAuthenticated: boolean | null;
-  setAuthrotized: () => void;
-  setUnAuthrotized: () => void;
-  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean | null>>;
-  userAuthorizedState: string | undefined;
-  appIsReady: boolean;
-  setAppIsReady: React.Dispatch<React.SetStateAction<boolean>>;
-  user: TokenResultRawResponse | null;
-  setSaveDataUser: (user: TokenResultRawResponse) => void;
+  authorizedState: string | null;
+  users: UserData[] | null;
+  contextUserData: UserData | null;
+  userTasks: ITask[];
+  setAuthorizedState: (state: string) => Promise<void>;
+  setUserData: (user: TokenResultRawResponse) => Promise<void>;
+  setUserTasks: (userId: string, tasks: ITask[]) => Promise<void>;
+  addUserTask: (userId: string, task: ITask) => Promise<void>;
+  removeUserTask: (userId: string, taskId: string) => Promise<void>;
+  removeAuthorizedState: () => Promise<void>;
+  clearUserData: () => Promise<void>;
+  deviceAuthorizedLocalState: string | null
+  setDeviceAuthorizedLocalState: (state: string | null) => void
+  logoutUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,80 +30,92 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const AuthProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
-  const [userAuthorizedState, setUserAuthorizedState] = useState<string | undefined>(undefined);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [appIsReady, setAppIsReady] = useState(false);
-  const [user, setUser] = useState<TokenResultRawResponse | null>(null);
+  const {
+    authorizedState,
+    users,
+    getAuthorizedState,
+    getUsersData,
+    getUserData,
+    getUserTasks,
+    setAuthorizedState,
+    setUserData,
+    setUserTasks,
+    addUserTask,
+    removeUserTask,
+    removeAuthorizedState,
+    clearUserData,
+  } = useStorageStore();
+
+  const [contextAuthorizedState, setContextAuthorizedState] = useState<string | null>(authorizedState);
+
+  const [contextUsers, setContextUsers] = useState<UserData[] | null>(users);
+  const [contextUserData, setContextUserData] = useState<UserData | null>(null);
+
+  const [contextUserTasks, setContextUserTasks] = useState<ITask[]>([]);
+
+  const [deviceAuthorizedLocalState, setDeviceAuthorizedLocalState] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadAuthState = async () => {
+    const fetchInitialData = async () => {
+
       try {
-        const storedAuth = await AsyncStorage.getItem(USER_AUTHORIZED);
+        const authState = await getAuthorizedState();
 
-        console.log('Stored auth state:', storedAuth);
+        setContextAuthorizedState(authState);
 
-        if (storedAuth !== null && isAuthenticated === null) {
-          setUserAuthorizedState(storedAuth);
-          setIsAuthenticated(true);
+        const usersData = await getUsersData();
+        setContextUsers(usersData);
 
-          const storedUser = await AsyncStorage.getItem('user');
-          if (storedUser !== null) {
-            setUser(JSON.parse(storedUser));
+        if (authState) {
+          const userId = authState;
+
+          if (userId) {
+
+            const user = await getUserData(userId);
+
+            setContextUserData(user);
+
+            const tasks = await getUserTasks(userId);
+            setContextUserTasks(tasks);
+
           }
-
-        } else {
-          setIsAuthenticated(false);
         }
       } catch (error) {
-        console.error('Error loading auth state:', error);
-        setIsAuthenticated(false);
+        console.error('Error fetching initial data:', error);
       }
+
     };
 
-    loadAuthState();
-  }, []);
+    fetchInitialData();
+  }, [deviceAuthorizedLocalState]);
 
-  const setSaveDataUser = async (user: TokenResultRawResponse) => {
-    try {
-      setUser(user);
-      await AsyncStorage.setItem('user', JSON.stringify(user));
-    } catch (error) {
-      console.error('Error saving user data:', error);
-    }
-  };
+  const logoutUser = async () => {
+    setDeviceAuthorizedLocalState(null)
+    removeAuthorizedState()
 
-  const setAuthrotized = async () => {
-    try {
-      setIsAuthenticated(true);
-      setUserAuthorizedState('y');
-      await AsyncStorage.setItem(USER_AUTHORIZED, 'y');
-    } catch (error) {
-      console.error('Error setting authorized state:', error);
-    }
-  };
-
-  const setUnAuthrotized = async () => {
-    try {
-      setIsAuthenticated(null);
-      setUserAuthorizedState(undefined);
-      await AsyncStorage.removeItem(USER_AUTHORIZED);
-    } catch (error) {
-      console.error('Error setting unauthorized state:', error);
-    }
-  };
+    setContextAuthorizedState(null)
+    setContextUsers(null)
+    setContextUserData(null)
+    setContextUserTasks([])
+  }
 
   return (
     <AuthContext.Provider
       value={{
-        isAuthenticated,
-        setAuthrotized,
-        setUnAuthrotized,
-        setIsAuthenticated,
-        appIsReady,
-        setAppIsReady,
-        userAuthorizedState,
-        setSaveDataUser,
-        user
+        authorizedState: contextAuthorizedState,
+        users: contextUsers,
+        contextUserData,
+        userTasks: contextUserTasks,
+        setAuthorizedState,
+        setUserData,
+        setUserTasks,
+        addUserTask,
+        removeUserTask,
+        removeAuthorizedState,
+        clearUserData,
+        deviceAuthorizedLocalState,
+        setDeviceAuthorizedLocalState,
+        logoutUser
       }}
     >
       {children}
@@ -108,6 +130,5 @@ const useAuth = () => {
   }
   return context;
 };
-
 
 export { AuthProvider, useAuth };

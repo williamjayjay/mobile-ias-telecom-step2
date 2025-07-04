@@ -1,11 +1,12 @@
 import * as AuthSession from 'expo-auth-session';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { showMessageError, showMessageSuccess } from '@/core/utils/messages-toast';
+import { showMessageError, showMessageSuccess } from '@/presentation/ui/utils/messages-toast';
 import { SCHEME_NAME_AUTH } from '@/core/constants/global';
 import { rootEnv } from '@/core/configs/env.config';
 import { useAuth } from '@/presentation/ui/context/AuthContext';
 import { TokenResultRawResponse } from './types';
 import { useStorageStore } from '@/core/stores/usersStore';
+import { generateRandomTasks } from '@/presentation/ui/hooks/generateRandomTasks';
 
 export const useWelcomeHook = () => {
 
@@ -22,7 +23,9 @@ export const useWelcomeHook = () => {
 
   const {
     setAuthorizedState,
-    setUserData
+    setUserData,
+    getUserData,
+    setUserTasks
   } = useStorageStore();
 
   const handleLogin = async () => {
@@ -67,7 +70,29 @@ export const useWelcomeHook = () => {
 
           await setAuthorizedState(usuarioId?.toString() ?? '');
 
-          setUserData({
+          // TODO: Fazer o FIND pelo user, e caso nao exista, criar um novo e ja atrelar 50 tarefas para o mesmo.
+          const userFind = await getUserData(usuarioId?.toString());
+
+
+          if (!userFind) {
+
+            await setUserData({
+              access_token,
+              refresh_token,
+              login,
+              usuarioId,
+              usuarioNome
+            });
+
+            const tasksGenerated = generateRandomTasks()
+
+            await setUserTasks(usuarioId.toString(), tasksGenerated);
+
+            return
+
+          }
+
+          await setUserData({
             access_token,
             refresh_token,
             login,
@@ -75,18 +100,6 @@ export const useWelcomeHook = () => {
             usuarioNome
           });
 
-          // setSaveDataUser({
-          //   id: usuarioId,
-          //   access_token,
-          //   refresh_token,
-          //   login,
-          //   usuarioId,
-          //   usuarioNome
-          // })
-
-
-
-          // setAuthrotized();
 
         } else {
           showMessageError('Falha ao obter o token de acesso.');

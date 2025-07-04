@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Animated } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Animated, Alert } from 'react-native';
 import { useAuth } from '@/presentation/ui/context/AuthContext';
 import { theme } from '@/presentation/ui/styles/colorsTheme';
 import { SafeAreaContainer } from '@/presentation/ui/components/SafeAreaContainer';
@@ -7,12 +7,38 @@ import { ITask } from '@/core/interfaces/tasks';
 import { Ionicons } from '@expo/vector-icons';
 import { TextCustom } from '@/presentation/ui/components/TextCustom';
 import { CircleCheckBig, Trash2 } from 'lucide-react-native';
+import { useStorageStore } from '@/core/stores/usersStore';
+import { showMessageWarning } from '@/presentation/ui/utils/messages-toast';
 
 export const TaskListScreen = () => {
-  const { userTasks } = useAuth();
+  const { contextUserData } = useAuth();
+
+  const { user } = contextUserData || {
+    user: {
+      usuarioId: '',
+      usuarioNome: '',
+      login: '',
+    },
+  };
+
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
+  const [localTasks, setLocalTasks] = useState<ITask[]>([]);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [localLoading, setLocalLoading] = useState(false);
   const [actionBarAnim] = useState(new Animated.Value(0));
+
+  const { removeUserTask, getUserTasks, completeUserTask, removeUserTasksBulk, completeUserTasksBulk } = useStorageStore();
+
+  const fetchTasks = async () => {
+    const newUserTasks = await getUserTasks(user.usuarioId.toString());
+
+    setLocalTasks(newUserTasks)
+  };
+
+  useEffect(() => {
+    fetchTasks();
+  }, [user.usuarioId, getUserTasks]);
+
 
   const toggleSelectionMode = () => {
     if (isSelectionMode) {
@@ -38,13 +64,72 @@ export const TaskListScreen = () => {
   };
 
   const handleBulkComplete = () => {
-    console.log('Completing tasks:', selectedTasks);
     toggleSelectionMode();
+
+    if (selectedTasks.length <= 1) {
+      showMessageWarning('Selecione pelo menos duas tarefas para concluir.')
+      return
+    };
+
+    Alert.alert(
+      'Concluir tarefas',
+      `Deseja concluir ${selectedTasks.length} tarefa(s)?`,
+      [
+        {
+          text: 'Não',
+          style: 'cancel'
+        },
+        {
+          text: 'Concluir',
+          onPress: async () => {
+            setLocalLoading(true)
+
+            setTimeout(async () => {
+              await completeUserTasksBulk(user.usuarioId.toString(), selectedTasks);
+
+              await fetchTasks()
+
+              setLocalLoading(false)
+            }, 1000);
+          }
+        }
+      ]
+    );
   };
 
   const handleBulkDelete = () => {
-    console.log('Deleting tasks:', selectedTasks);
     toggleSelectionMode();
+
+    if (selectedTasks.length <= 1) {
+      showMessageWarning('Selecione pelo menos duas tarefas para excluir.')
+      return
+    };
+
+    Alert.alert(
+      'Excluir tarefas',
+      `Deseja excluir ${selectedTasks.length} tarefa(s)?`,
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel'
+        },
+        {
+          text: 'Excluir',
+          onPress: async () => {
+            setLocalLoading(true)
+
+            setTimeout(async () => {
+              await removeUserTasksBulk(user.usuarioId.toString(), selectedTasks);
+
+              await fetchTasks()
+
+              setLocalLoading(false)
+            }, 1000);
+          }
+        }
+      ]
+    );
+
   };
 
   const getStatusStyle = (status: string) => {
@@ -91,12 +176,32 @@ export const TaskListScreen = () => {
       }
     };
 
-    const handleDeleteTask = () => {
-      console.log('Deleting task:', item.id);
+    const handleDeleteTask = async () => {
+      setLocalLoading(true)
+
+      setTimeout(async () => {
+        await removeUserTask(user.usuarioId.toString(), item.id);
+
+        await fetchTasks()
+
+        setLocalLoading(false)
+      }, 1000);
     };
 
     const handleCompleteTask = () => {
-      console.log('Completing task:', item.id);
+
+      setLocalLoading(true)
+
+
+      setTimeout(async () => {
+        await completeUserTask(user.usuarioId.toString(), item.id);
+
+        await fetchTasks()
+
+        setLocalLoading(false)
+      }, 1000);
+
+
     };
 
     return (
@@ -147,7 +252,8 @@ export const TaskListScreen = () => {
                   <CircleCheckBig size={24} color={theme.signal.success} />
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.button} onPress={handleDeleteTask}>
+                <TouchableOpacity style={styles.button}
+                  onPress={() => handleDeleteTask()}>
                   <Trash2 size={24} color={theme.signal.danger} />
                 </TouchableOpacity>
               </View>
@@ -158,9 +264,15 @@ export const TaskListScreen = () => {
     );
   };
 
+  const reorganizedTAsks = localTasks ? localTasks?.sort((a, b) => {
+    const dateA = new Date(a.createdAt);
+    const dateB = new Date(b.createdAt);
+    return dateB.getTime() - dateA.getTime();
+  }) : []
+
   return (
     <>
-      {!userTasks && (
+      {!reorganizedTAsks || localLoading && (
         <View
           style={{
             position: 'absolute',
@@ -184,16 +296,22 @@ export const TaskListScreen = () => {
       >
         <View style={styles.container}>
           <View style={styles.headerContainer}>
-            <TextCustom style={styles.title}>Minhas Tarefas2</TextCustom>
+            <View>
+              <TextCustom style={styles.title}>Minhas Tarefas</TextCustom>
+              <TextCustom >Quantidade: {reorganizedTAsks?.length}</TextCustom>
+
+            </View>
+
             {isSelectionMode && (
               <TouchableOpacity onPress={toggleSelectionMode}>
                 <TextCustom style={styles.cancelButton}>Cancelar</TextCustom>
               </TouchableOpacity>
             )}
           </View>
+
           <FlatList
             showsVerticalScrollIndicator={false}
-            data={userTasks}
+            data={reorganizedTAsks}
             renderItem={({ item }) => <TaskItem item={item} />}
             keyExtractor={item => item.id}
             style={styles.list}

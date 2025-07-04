@@ -9,7 +9,9 @@ import { View, ScrollView, Alert } from 'react-native';
 import Constants from 'expo-constants';
 export function AccountScreen() {
 
-  const { contextUserData, logoutUser } = useAuth();
+  const { contextUserData, logoutUser, clearUserData } = useAuth();
+
+
 
   const { user } = contextUserData || {
     user: {
@@ -116,7 +118,7 @@ export function AccountScreen() {
             />
           }
         />
-        {/*
+
         <ListItem
           onPress={() => {
             clearUserData()
@@ -131,7 +133,7 @@ export function AccountScreen() {
               strokeWidth={1.5}
             />
           }
-        /> */}
+        />
 
         <TextCustom
           style={{

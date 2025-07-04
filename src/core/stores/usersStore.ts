@@ -3,6 +3,8 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { TokenResultRawResponse } from '@/presentation/ui/screens/public/WelcomeScreen/types';
 import { ITask } from '@/core/interfaces/tasks';
+import { TaskStatus } from '@/core/enums/task';
+import { USER_AUTHORIZED_KEY, USERS_KEY } from '@/core/constants/stores';
 
 interface UserData {
   user: TokenResultRawResponse;
@@ -22,11 +24,13 @@ interface StorageState {
   getUserTasks: (userId: string) => Promise<ITask[]>;
   addUserTask: (userId: string, task: ITask) => Promise<void>;
   removeUserTask: (userId: string, taskId: string) => Promise<void>;
+  completeUserTask: (userId: string, taskId: string) => Promise<void>;
+  completeUserTasksBulk: (userId: string, taskIds: string[]) => Promise<void>;
+  removeUserTasksBulk: (userId: string, taskIds: string[]) => Promise<void>;
   clearUserData: () => Promise<void>;
 }
 
-const USER_AUTHORIZED_KEY = 'user_authorized';
-const USERS_KEY = 'users';
+
 
 export const useStorageStore = create<StorageState>()(
   persist(
@@ -43,7 +47,6 @@ export const useStorageStore = create<StorageState>()(
           throw error;
         }
       },
-
 
       async getAuthorizedState() {
         try {
@@ -69,7 +72,6 @@ export const useStorageStore = create<StorageState>()(
       async setUserData(user: TokenResultRawResponse) {
         try {
           const users = get().users;
-
           const existingUserIndex = users.findIndex(u => u.user.usuarioId === user.usuarioId);
 
           let updatedUsers: UserData[];
@@ -82,9 +84,7 @@ export const useStorageStore = create<StorageState>()(
           }
 
           await AsyncStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers));
-
           set({ users: updatedUsers });
-
         } catch (error) {
           console.error('Error saving user data:', error);
           throw error;
@@ -106,9 +106,7 @@ export const useStorageStore = create<StorageState>()(
       async getUserData(userId: string) {
         try {
           const users = get().users;
-
           const user = users.find(u => u.user.usuarioId?.toString() === userId);
-
           return user || null;
         } catch (error) {
           console.error('Error retrieving user data:', error);
@@ -119,7 +117,7 @@ export const useStorageStore = create<StorageState>()(
       async setUserTasks(userId: string, tasks: ITask[]) {
         try {
           const users = get().users;
-          const userIndex = users.findIndex(u => u.user.usuarioId === userId);
+          const userIndex = users.findIndex(u => u.user.usuarioId?.toString() === userId);
           if (userIndex !== -1) {
             const updatedUsers = [...users];
             updatedUsers[userIndex].tasks = tasks;
@@ -137,7 +135,7 @@ export const useStorageStore = create<StorageState>()(
       async getUserTasks(userId: string) {
         try {
           const user = await get().getUserData(userId);
-          return user ? user.tasks : [];
+          return user ? user.tasks.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) : [];
         } catch (error) {
           console.error('Error retrieving user tasks:', error);
           throw error;
@@ -165,7 +163,7 @@ export const useStorageStore = create<StorageState>()(
       async removeUserTask(userId: string, taskId: string) {
         try {
           const users = get().users;
-          const userIndex = users.findIndex(u => u.user.usuarioId === userId);
+          const userIndex = users.findIndex(u => u.user.usuarioId?.toString() === userId);
           if (userIndex !== -1) {
             const updatedUsers = [...users];
             updatedUsers[userIndex].tasks = updatedUsers[userIndex].tasks.filter(
@@ -182,6 +180,72 @@ export const useStorageStore = create<StorageState>()(
         }
       },
 
+      async completeUserTask(userId: string, taskId: string) {
+        try {
+          const users = get().users;
+          const userIndex = users.findIndex(u => u.user.usuarioId?.toString() === userId);
+          if (userIndex !== -1) {
+            const updatedUsers = [...users];
+            const taskIndex = updatedUsers[userIndex].tasks.findIndex(t => t.id === taskId);
+            if (taskIndex !== -1) {
+              updatedUsers[userIndex].tasks[taskIndex] = {
+                ...updatedUsers[userIndex].tasks[taskIndex],
+                status: TaskStatus.Concluida
+              };
+              await AsyncStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers));
+              set({ users: updatedUsers });
+            } else {
+              throw new Error('Task not found');
+            }
+          } else {
+            throw new Error('User not found');
+          }
+        } catch (error) {
+          console.error('Error completing user task:', error);
+          throw error;
+        }
+      },
+
+      async completeUserTasksBulk(userId: string, taskIds: string[]) {
+        try {
+          const users = get().users;
+          const userIndex = users.findIndex(u => u.user.usuarioId?.toString() === userId);
+          if (userIndex !== -1) {
+            const updatedUsers = [...users];
+            updatedUsers[userIndex].tasks = updatedUsers[userIndex].tasks.map(task =>
+              taskIds.includes(task.id?.toString()) ? { ...task, status: TaskStatus.Concluida } : task,
+            );
+            await AsyncStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers));
+            set({ users: updatedUsers });
+          } else {
+            throw new Error('User not found');
+          }
+        } catch (error) {
+          console.error('Error completing user tasks in bulk:', error);
+          throw error;
+        }
+      },
+
+      async removeUserTasksBulk(userId: string, taskIds: string[]) {
+        try {
+          const users = get().users;
+          const userIndex = users.findIndex(u => u.user.usuarioId?.toString() === userId);
+          if (userIndex !== -1) {
+            const updatedUsers = [...users];
+            updatedUsers[userIndex].tasks = updatedUsers[userIndex].tasks.filter(
+              t => !taskIds.includes(t.id?.toString()),
+            );
+            await AsyncStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers));
+            set({ users: updatedUsers });
+          } else {
+            throw new Error('User not found');
+          }
+        } catch (error) {
+          console.error('Error removing user tasks in bulk:', error);
+          throw error;
+        }
+      },
+
       async clearUserData() {
         try {
           await AsyncStorage.removeItem(USERS_KEY);
@@ -193,12 +257,12 @@ export const useStorageStore = create<StorageState>()(
       },
     }),
     {
-      name: 'storage', // Name of the storage key for Zustand persistence
-      storage: createJSONStorage(() => AsyncStorage), // Use AsyncStorage for persistence
+      name: 'storage',
+      storage: createJSONStorage(() => AsyncStorage),
       partialize: state => ({
         authorizedState: state.authorizedState,
         users: state.users,
-      }), // Persist only specific parts of the state
+      }),
     },
   ),
 );

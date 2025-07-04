@@ -21,7 +21,7 @@ import { TaskStatus } from '@/core/enums/task';
 import { ITask } from '@/core/interfaces/tasks';
 import { TaskFormData, taskSchema } from '@/core/schemas/createTask';
 import { TextCustom } from '@/presentation/ui/components/TextCustom';
-import { showMessageError, showMessageSuccess } from '@/core/utils/messages-toast';
+import { showMessageError, showMessageSuccess } from '@/presentation/ui/utils/messages-toast';
 
 export const CreateTaskScreen = () => {
   const { contextUserData } = useAuth();

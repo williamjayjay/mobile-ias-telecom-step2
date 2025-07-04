@@ -24,5 +24,17 @@ const showMessageSuccess = (successMessage: string) => {
   });
 };
 
+const showMessageWarning = (alertMessage: string, duration: number = 2600) => {
+  showMessage({
+    message: alertMessage,
+    type: "warning",
+    animated: true,
+    icon: "warning",
+    duration: duration,
+    hideOnPress: true,
+    statusBarHeight: 48
+  })
+}
 
-export { showMessageError, showMessageSuccess }
+
+export { showMessageError, showMessageSuccess, showMessageWarning }

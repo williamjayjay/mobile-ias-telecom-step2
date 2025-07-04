@@ -60,6 +60,7 @@ const AuthProvider: React.FC<{
 
       try {
         const authState = await getAuthorizedState();
+
         setContextAuthorizedState(authState);
 
         const usersData = await getUsersData();
@@ -67,12 +68,16 @@ const AuthProvider: React.FC<{
 
         if (authState) {
           const userId = authState;
+
           if (userId) {
+
             const user = await getUserData(userId);
+
             setContextUserData(user);
 
             const tasks = await getUserTasks(userId);
             setContextUserTasks(tasks);
+
           }
         }
       } catch (error) {

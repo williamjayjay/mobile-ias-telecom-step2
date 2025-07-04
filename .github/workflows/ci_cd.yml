@@ -44,7 +44,7 @@ jobs:
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
-          token: ${{ secrets.EAS_EXPO_TOKEN_TEST }}
+          token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies again
         run: npm install --legacy-peer-deps

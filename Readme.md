@@ -1,4 +1,4 @@
-<h1 align="center">App IAS Telecom</h1>
+<h1 align="center">App IAS Telecom (React Native - Expo)</h1>
 
 <p align="center">
   <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/williamjayjay/mobile-ias-telecom-step2">
@@ -6,125 +6,130 @@
   <img alt="GitHub Top Language" src="https://img.shields.io/github/languages/top/williamjayjay/mobile-ias-telecom-step2" />
 
   <img alt="Repository size" src="https://img.shields.io/github/repo-size/williamjayjay/mobile-ias-telecom-step2">
-
+  
   <a href="https://github.com/williamjayjay/Github-Blog/commits/master">
     <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/williamjayjay/mobile-ias-telecom-step2">
   </a>
-
+    
    <a href="https://github.com/williamjayjay/mobile-ias-telecom-step2/stargazers">
     <img alt="Stargazers" src="https://img.shields.io/github/stars/williamjayjay/mobile-ias-telecom-step2?style=social">
   </a>
 </p>
 
-<p align="center"><p align="center">
-Este aplicativo tem como principais funcionalidades fazer login com acesso na plataforma Interfocus, cadastrar, concluir e remover tarefas.</p>
+<p align="center">
+Este aplicativo é um desafio para desenvolvedores mobile, com foco na criação de um app simples, porém funcional, que siga os padrões de codificação e organização utilizados na empresa. O objetivo é desenvolver um aplicativo de lista de tarefas que realiza login via OAuth2 no sistema da Interfocus, mantendo os dados salvos localmente no dispositivo, garantindo uma interface amigável e uma experiência fluida para o usuário.
+</p>
 
-## 🥶 Sobre o projeto
+<p align="center">
+<img alt="app_expo_cars_list" src="github/assets/cover.png" />
+</p>
 
-Desenvolvi esse projeto para uma das etapas do teste para a Interfocus.
+## 🎥 VideoCase
 
-## Mobile React Native:
+https://github.com/user-attachments/assets/3fb0f5c2-563a-4733-a0f1-cb563c364ea5
 
-**Aplicativo:** O app irá fazer login com usuarios credenciados no sistema Interfocus e conseguir gerenciar tarefas dentro do mesmo.
 
-## 🚀 Tecnologias
+## 🥶 About the Project
 
-Principais tecnologias que utilizei para desenvolver esta aplicação
-Aqui está a lista das bibliotecas no formato desejado, com os nomes das bibliotecas e links para suas documentações ou páginas oficiais, seguindo o padrão `- [Library](link)`:
+I developed this project as part of a mobile developer challenge to improve my skills in React Native, navigation, and state management. The main goal was to create a functional and user-friendly to-do list app that follows best practices and industry standards.
 
-- [@react-native-async-storage/async-storage](https://docs.expo.dev/versions/latest/sdk/async-storage/): 2.1.2
-- [@react-navigation/native](https://reactnavigation.org/docs/getting-started/): ^7.1.14
-- [@react-navigation/native-stack](https://reactnavigation.org/docs/native-stack-navigator/): ^7.3.21
-- [@react-navigation/bottom-tabs](https://reactnavigation.org/docs/bottom-tabs-navigator/): 7.2.0
-- [@react-navigation/stack](https://reactnavigation.org/docs/stack-navigator/): ^7.4.2
-- [@testing-library/jest-native](https://testing-library.com/docs/ecosystem-jest-native/): ^5.4.3
-- [@testing-library/react-hooks](https://react-hooks-testing-library.com/): ^8.0.1
-- [@testing-library/react-native](https://callstack.github.io/react-native-testing-library/): ^13.2.0
-- [expo](https://docs.expo.dev/): ~53.0.13
-- [expo-auth-session](https://docs.expo.dev/versions/latest/sdk/auth-session/): ~6.2.0
-- [expo-crypto](https://docs.expo.dev/versions/latest/sdk/crypto/): ~14.1.5
-- [expo-secure-store](https://docs.expo.dev/versions/latest/sdk/securestore/): ~14.2.3
-- [expo-splash-screen](https://docs.expo.dev/versions/latest/sdk/splash-screen/): ~0.30.9
-- [expo-status-bar](https://docs.expo.dev/versions/latest/sdk/status-bar/): ~2.2.3
-- [jest](https://jestjs.io/): ~29.7.0
-- [jest-expo](https://docs.expo.dev/guides/testing-with-jest/): ~53.0.7
-- [react](https://react.dev/): 19.0.0
-- [react-native](https://reactnative.dev/): 0.79.4
-- [react-native-flash-message](https://www.npmjs.com/package/react-native-flash-message): ^0.4.2
-- [react-native-safe-area-context](https://docs.expo.dev/versions/latest/sdk/safe-area-context/): 5.4.0
-- [react-native-screens](https://docs.expo.dev/versions/latest/sdk/screens/): ~4.11.1
-- [zod](https://zod.dev/): ^3.22.4
-- [react-native-svg](https://docs.expo.dev/versions/latest/sdk/svg/): 15.8.0
-- [lucide-react-native](https://lucide.dev/docs/react-native): 0.456.0
+## 📲 Mobile React Native:
 
-## Detalhe CI CD
+**Application:** The app allows users to log in via OAuth2 using the Interfocus system through Expo Auth Session, manage their to-do tasks, and persist data locally using AsyncStorage. It features a responsive design and smooth user experience, leveraging tools like React Navigation with Tab Navigator, React Hook Form for form handling, and FlashMessage for user feedback. The codebase follows clean architecture principles and includes unit tests with Jest to ensure reliability and maintainability.
 
-No arquivo ci_cd.yml observe o alias para a criar a secret no github que irá conter o token expo para assim podermos criar um fluxo de automação CI CD que irá executar o build da aplicação, rodar os testes unitários e por fim gerar o apk do aplicativo android no caso.
+## 🚀 Technologies  
 
-## Testes unitários
+Key technologies used in this application:  
 
-Para rodar os testes basta iniciar o comando:
+- [Expo](https://expo.dev/)  
+- [Typescript](https://www.typescriptlang.org)
+- [React Native](https://reactnative.dev/)  
+- [React](https://react.dev/)  
+- [React Navigation Native](https://reactnavigation.org/)  
+- [React Navigation Native Stack](https://reactnavigation.org/docs/stack-navigator/)  
+- [React Navigation Bottom Tabs](https://reactnavigation.org/docs/bottom-tab-navigator)  
+- [React Native Safe Area Context](https://github.com/th3rdwave/react-native-safe-area-context)  
+- [React Native Screens](https://github.com/software-mansion/react-native-screens)  
+- [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/)  
+- [React Native Async Storage](https://github.com/react-native-async-storage/async-storage)  
+- [Hookform Resolvers](https://react-hook-form.com/get-started/#SchemaValidation)  
+- [Zod](https://zod.dev/)  
+- [React Hook Form](https://react-hook-form.com/)  
+- [Lucide React Native](https://lucide.dev/docs/lucide-react-native)  
+- [React Native Flash Message](https://github.com/lucasferreira/react-native-flash-message)  
+- [React Native SVG](https://github.com/software-mansion/react-native-svg)  
+- [Jest](https://jestjs.io/)  
+- [Jest Expo](https://github.com/expo/jest-expo)  
+- [Expo Auth Session](https://docs.expo.dev/versions/latest/sdk/auth-session/)  
+
+
+## CI/CD Details
+
+In the `ci_cd.yml` file, note the alias used to create the secret on GitHub that will contain the Expo token. This enables the creation of a CI/CD automation flow that will build the application, run unit tests, and finally generate the APK for the Android app.
+
+## Unit Tests
+
+To run the tests, simply execute the following command:
 
 ```sh
 bun run test
 ```
 
-## Guia de inicialização
 
-Para instalar e configurar uma cópia local, siga estas etapas simples:
+## Getting Started
 
-### Prerequisitos
+To install and configure a local copy, follow these steps:
 
-Para garantir o funcionamento adequado da nossa aplicação, verifique abaixo:
+### Prerequisites
 
-1. **Clone o repositório**:
+Ensure the following steps are completed to run the app:
 
+1.**Clone the repository**:
 ```sh
 git clone https://github.com/williamjayjay/mobile-ias-telecom-step2
 ```
 
-2. **Navegue na raiz do projeto mobile-ias-telecom-step2:**
+2.**Navigate to the root of the project mobile-ias-telecom**
 
-3. **Instale os módulos:**
+3. **Copy the example .env file::** 
 
-```sh
-bun i
-```
+4.**Install the dependencies**:
+  ```sh
+  bun i
+  ```
 
-4. **Copie o .env de exemplo:**
+5.**Run the application **:
+  ```sh
+  bun start
+  ```
+   or with script 
+  ```sh
+  bun tu
+  ```
 
-5. **Rode o aplicativo e escaneie o qrcode ou use com celular plugado via usb:**
-
-```sh
-bun tt
-```
 
 ## Roadmap
 
-- [x] Iniciar o aplicativo, entrar na tela de login
+- [x] Launch the app on the main screen with a button to log in
 
-- [x] Na tela de login conseguir navegar para a webview de autenticação da Interfocus
+- [x] When clicking to log in, open the browser to authenticate the user via OAuth
 
-- [x] Logar com o usuario e armazenar os dados do mesmo
+- [x] Log the user in and, if it’s their first login, add 50 random tasks for them
 
-- [ ] Caso seja o primeiro login, settar 50 tarefas iniciais para esse usuário
+- [x] If it’s the first login, set 50 initial tasks for that user
 
-- [x] Conseguir concluir e excluir as tarefas
+- [x] Be able to complete and delete individual tasks
 
-- [x] Conseguir concluri e excluir em massa ao pressionar por um longo tempo
+- [x] Be able to complete and delete tasks in bulk by long-pressing
 
-- [x] Conseguir visualizar mais informações
+- [x] Be able to view more information about tasks
 
-- [x] Conseguir criar uma nova tarefa
+- [x] When opening and closing a task, move it to the “open” status
 
-- [x] Conseguir ver dados do usuario e deslogar do app
+- [x] Be able to create a new task
+
+- [x] Display toast notifications on success or error
+
+- [x] On the profile screen, be able to view user data and log out of the app
 
 <!-- --------------------- -->
-
-## UI UX
-
-|                  Tela de login                  |                 Tela Home                  |                  Tela de perfil                   |
-| :---------------------------------------------: | :----------------------------------------: | :-----------------------------------------------: |
-| ![Tela de login](.github/assets/tela_login.png) | ![Tela Home](.github/assets/tela_home.png) | ![Tela de perfil](.github/assets/tela_perfil.png) |
-
-<!-- https://drive.google.com/drive/folders/1nbO-j4qFo694Iuh461GIRT0OAmU-K9hw?usp=sharing -->

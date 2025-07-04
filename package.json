@@ -8,7 +8,10 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "tt": "expo start --tunnel",
-    "test": "jest"
+    "test": "jest",
+    "pb": "npx expo prebuild --platform android && npx expo run:android",
+    "pbi": "npx expo prebuild --platform ios && npx expo run:ios",
+    "eas-local": "eas build --platform android --profile preview --local"
   },
   "jest": {
     "preset": "jest-expo",

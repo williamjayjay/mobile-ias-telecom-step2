@@ -119,22 +119,6 @@ export function AccountScreen() {
           }
         />
 
-        <ListItem
-          onPress={() => {
-            clearUserData()
-          }}
-          marginTop={16}
-          title={'ZERAR'}
-          customTitleStyle={{ color: theme.signal.danger }}
-          rightIcon={
-            <ChevronRight
-              color={theme.text.primary}
-              size={22}
-              strokeWidth={1.5}
-            />
-          }
-        />
-
         <TextCustom
           style={{
             color: theme.text.primary,

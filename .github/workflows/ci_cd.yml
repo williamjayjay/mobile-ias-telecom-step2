@@ -3,7 +3,7 @@ name: CI/CD
 on:
   push:
     branches:
-      - dev-test2
+      - develop
 
 jobs:
   CI:
@@ -51,6 +51,3 @@ jobs:
 
       - name: Build
         run: eas build --platform android --profile preview --non-interactive --no-wait
-        env:
-          EXPO_PUBLIC_CLIENT_ID: ${{ secrets.EXPO_PUBLIC_CLIENT_ID }}
-          EXPO_PUBLIC_CLIENT_SECRET: ${{ secrets.EXPO_PUBLIC_CLIENT_SECRET }}

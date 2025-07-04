@@ -33,9 +33,7 @@
     "extra": {
       "eas": {
         "projectId": "b2e3144a-c0c0-42c4-882e-7ec3de2ad3b3"
-      },
-      "apiAuth": "https://ias.interfocus.com.br/authorize",
-      "apiToken": "https://auth.interfocus.com.br/api/oauth/token"
+      }
     }
   }
 }

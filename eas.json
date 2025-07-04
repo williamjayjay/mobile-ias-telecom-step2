@@ -15,7 +15,9 @@
       "distribution": "internal",
       "env": {
         "EXPO_PUBLIC_API_AUTH": "https://ias.interfocus.com.br/authorize",
-        "EXPO_PUBLIC_API_TOKEN": "https://auth.interfocus.com.br/api/oauth/token"
+        "EXPO_PUBLIC_API_TOKEN": "https://auth.interfocus.com.br/api/oauth/token",
+        "EXPO_PUBLIC_CLIENT_ID": "6a5fc829-36c9-49f8-9bbb-0029508dd83c",
+        "EXPO_PUBLIC_CLIENT_SECRET": "thatsmysecretkey"
       }
     },
     "production": {

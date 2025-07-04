@@ -67,7 +67,6 @@ const validateEnv = (env: Record<string, string | undefined>): EnvSchema => {
   return Object.freeze(result.data);
 };
 
-// Only initialize rootEnv if not in a test environment
 const rootEnv: EnvSchema = process.env.NODE_ENV !== 'test'
   ? validateEnv({
     EXPO_PUBLIC_API_AUTH: process.env.EXPO_PUBLIC_API_AUTH,

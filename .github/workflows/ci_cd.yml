@@ -3,7 +3,7 @@ name: CI/CD
 on:
   push:
     branches:
-      - develop-test
+      - dev-test2
 
 jobs:
   CI:

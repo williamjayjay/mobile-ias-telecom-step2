@@ -33,7 +33,11 @@
     "extra": {
       "eas": {
         "projectId": "b2e3144a-c0c0-42c4-882e-7ec3de2ad3b3"
-      }
+      },
+      "apiAuth": "EXPO_PUBLIC_API_AUTH",
+      "apiToken": "EXPO_PUBLIC_API_TOKEN",
+      "clientId": "EXPO_PUBLIC_CLIENT_ID",
+      "clientSecret": "EXPO_PUBLIC_CLIENT_SECRET"
     }
   }
 }

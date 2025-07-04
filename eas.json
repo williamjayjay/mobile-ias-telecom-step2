@@ -12,7 +12,11 @@
       "android": {
         "buildType": "apk"
       },
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_AUTH": "https://ias.interfocus.com.br/authorize",
+        "EXPO_PUBLIC_API_TOKEN": "https://auth.interfocus.com.br/api/oauth/token"
+      }
     },
     "production": {
       "autoIncrement": true

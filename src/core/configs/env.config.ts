@@ -67,13 +67,22 @@ const validateEnv = (env: Record<string, string | undefined>): EnvSchema => {
   return Object.freeze(result.data);
 };
 
+// EXPO_PUBLIC_API_AUTH: process.env.EXPO_PUBLIC_API_AUTH,
+// EXPO_PUBLIC_API_TOKEN: process.env.EXPO_PUBLIC_API_TOKEN,
+// EXPO_PUBLIC_CLIENT_ID: process.env.EXPO_PUBLIC_CLIENT_ID,
+// EXPO_PUBLIC_CLIENT_SECRET: process.env.EXPO_PUBLIC_CLIENT_SECRET,
+
 // Only initialize rootEnv if not in a test environment
 const rootEnv: EnvSchema = process.env.NODE_ENV !== 'test'
   ? validateEnv({
-    EXPO_PUBLIC_API_AUTH: Constants.expoConfig?.extra?.apiAuth,
-    EXPO_PUBLIC_API_TOKEN: Constants.expoConfig?.extra?.apiToken,
-    EXPO_PUBLIC_CLIENT_ID: Constants.expoConfig?.extra?.clientId,
-    EXPO_PUBLIC_CLIENT_SECRET: Constants.expoConfig?.extra?.clientSecret,
+    EXPO_PUBLIC_API_AUTH: process.env.EXPO_PUBLIC_API_AUTH,
+    EXPO_PUBLIC_API_TOKEN: process.env.EXPO_PUBLIC_API_TOKEN,
+    EXPO_PUBLIC_CLIENT_ID: process.env.EXPO_PUBLIC_CLIENT_ID,
+    EXPO_PUBLIC_CLIENT_SECRET: process.env.EXPO_PUBLIC_CLIENT_SECRET,
+    // EXPO_PUBLIC_API_AUTH: Constants.expoConfig?.extra?.apiAuth,
+    // EXPO_PUBLIC_API_TOKEN: Constants.expoConfig?.extra?.apiToken,
+    // EXPO_PUBLIC_CLIENT_ID: Constants.expoConfig?.extra?.clientId,
+    // EXPO_PUBLIC_CLIENT_SECRET: Constants.expoConfig?.extra?.clientSecret,
   })
   : ({} as EnvSchema);
 

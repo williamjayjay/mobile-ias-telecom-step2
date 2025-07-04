@@ -123,12 +123,8 @@ bun tt
 
 ## UI UX
 
-|                  Tela de login                  |                 Tela Home                  |
-| :---------------------------------------------: | :----------------------------------------: |
-| ![Tela de login](.github/assets/tela_login.png) | ![Tela Home](.github/assets/tela_home.png) |
-
-|                  Tela de perfil                   |
-| :-----------------------------------------------: |
-| ![Tela de perfil](.github/assets/tela_perfil.png) |
+|                  Tela de login                  |                 Tela Home                  |                  Tela de perfil                   |
+| :---------------------------------------------: | :----------------------------------------: | :-----------------------------------------------: |
+| ![Tela de login](.github/assets/tela_login.png) | ![Tela Home](.github/assets/tela_home.png) | ![Tela de perfil](.github/assets/tela_perfil.png) |
 
 <!-- https://drive.google.com/drive/folders/1nbO-j4qFo694Iuh461GIRT0OAmU-K9hw?usp=sharing -->

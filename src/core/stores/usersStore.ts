@@ -25,6 +25,7 @@ interface StorageState {
   addUserTask: (userId: string, task: ITask) => Promise<void>;
   removeUserTask: (userId: string, taskId: string) => Promise<void>;
   completeUserTask: (userId: string, taskId: string) => Promise<void>;
+  openUserTask: (userId: string, taskId: string) => Promise<void>;
   completeUserTasksBulk: (userId: string, taskIds: string[]) => Promise<void>;
   removeUserTasksBulk: (userId: string, taskIds: string[]) => Promise<void>;
   clearUserData: () => Promise<void>;
@@ -205,6 +206,34 @@ export const useStorageStore = create<StorageState>()(
           throw error;
         }
       },
+
+      async openUserTask(userId: string, taskId: string) {
+        try {
+          const users = get().users;
+          const userIndex = users.findIndex(u => u.user.usuarioId?.toString() === userId);
+          if (userIndex !== -1) {
+            const updatedUsers = [...users];
+            const taskIndex = updatedUsers[userIndex].tasks.findIndex(t => t.id === taskId);
+            if (taskIndex !== -1) {
+              updatedUsers[userIndex].tasks[taskIndex] = {
+                ...updatedUsers[userIndex].tasks[taskIndex],
+                status: TaskStatus.Aberta
+              };
+              await AsyncStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers));
+              set({ users: updatedUsers });
+            } else {
+              throw new Error('Task not found');
+            }
+          } else {
+            throw new Error('User not found');
+          }
+        } catch (error) {
+          console.error('Error completing user task:', error);
+          throw error;
+        }
+      },
+
+
 
       async completeUserTasksBulk(userId: string, taskIds: string[]) {
         try {

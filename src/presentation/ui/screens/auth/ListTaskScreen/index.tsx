@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Animated, Alert } from 'react-native';
+import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import { View, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Animated, Alert, ScrollView } from 'react-native';
 import { useAuth } from '@/presentation/ui/context/AuthContext';
 import { theme } from '@/presentation/ui/styles/colorsTheme';
 import { SafeAreaContainer } from '@/presentation/ui/components/SafeAreaContainer';
@@ -9,6 +9,7 @@ import { TextCustom } from '@/presentation/ui/components/TextCustom';
 import { CircleCheckBig, Trash2 } from 'lucide-react-native';
 import { useStorageStore } from '@/core/stores/usersStore';
 import { showMessageWarning } from '@/presentation/ui/utils/messages-toast';
+import { TaskStatus } from '@/core/enums/task';
 
 export const TaskListScreen = () => {
   const { contextUserData } = useAuth();
@@ -26,21 +27,27 @@ export const TaskListScreen = () => {
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [localLoading, setLocalLoading] = useState(false);
   const [actionBarAnim] = useState(new Animated.Value(0));
+  const [filter, setFilter] = useState<'Todas' | 'Pendente' | 'Aberta' | 'Concluída'>('Todas');
+  const scrollViewRef = useRef<ScrollView>(null);
+  const [filterButtonPositions, setFilterButtonPositions] = useState<{ [key: string]: number }>({});
 
-  const { removeUserTask, getUserTasks, completeUserTask, removeUserTasksBulk, completeUserTasksBulk } = useStorageStore();
+  const { removeUserTask, getUserTasks, completeUserTask, removeUserTasksBulk, completeUserTasksBulk, openUserTask } = useStorageStore();
 
-  const fetchTasks = async () => {
-    const newUserTasks = await getUserTasks(user.usuarioId.toString());
-
-    setLocalTasks(newUserTasks)
-  };
+  const fetchTasks = useCallback(async () => {
+    setLocalLoading(true);
+    try {
+      const newUserTasks = await getUserTasks(user.usuarioId.toString());
+      setLocalTasks(newUserTasks);
+    } finally {
+      setLocalLoading(false);
+    }
+  }, [user.usuarioId, getUserTasks]);
 
   useEffect(() => {
     fetchTasks();
-  }, [user.usuarioId, getUserTasks]);
+  }, [fetchTasks]);
 
-
-  const toggleSelectionMode = () => {
+  const toggleSelectionMode = useCallback(() => {
     if (isSelectionMode) {
       setSelectedTasks([]);
     }
@@ -50,89 +57,70 @@ export const TaskListScreen = () => {
       duration: 300,
       useNativeDriver: true,
     }).start();
-  };
+  }, [isSelectionMode, actionBarAnim]);
 
-  const toggleTaskSelection = (taskId: string) => {
-    if (selectedTasks.includes(taskId)) {
-      setSelectedTasks(selectedTasks.filter(id => id !== taskId));
-      if (selectedTasks.length === 1) {
-        toggleSelectionMode();
-      }
-    } else {
-      setSelectedTasks([...selectedTasks, taskId]);
+  const toggleTaskSelection = useCallback((taskId: string) => {
+    setSelectedTasks(prev =>
+      prev.includes(taskId) ? prev.filter(id => id !== taskId) : [...prev, taskId]
+    );
+    if (selectedTasks.length === 1 && selectedTasks.includes(taskId)) {
+      toggleSelectionMode();
     }
-  };
+  }, [selectedTasks, toggleSelectionMode]);
 
-  const handleBulkComplete = () => {
-    toggleSelectionMode();
+  const handleBulkComplete = useCallback(() => {
 
     if (selectedTasks.length <= 1) {
-      showMessageWarning('Selecione pelo menos duas tarefas para concluir.')
-      return
-    };
+      showMessageWarning('Selecione pelo menos duas tarefas para concluir.');
+      return;
+    }
 
     Alert.alert(
       'Concluir tarefas',
       `Deseja concluir ${selectedTasks.length} tarefa(s)?`,
       [
-        {
-          text: 'Não',
-          style: 'cancel'
-        },
+        { text: 'Não', style: 'cancel' },
         {
           text: 'Concluir',
           onPress: async () => {
-            setLocalLoading(true)
-
-            setTimeout(async () => {
-              await completeUserTasksBulk(user.usuarioId.toString(), selectedTasks);
-
-              await fetchTasks()
-
-              setLocalLoading(false)
-            }, 1000);
-          }
-        }
+            setLocalLoading(true);
+            await completeUserTasksBulk(user.usuarioId.toString(), selectedTasks);
+            await fetchTasks();
+            toggleSelectionMode();
+            setLocalLoading(false);
+          },
+        },
       ]
     );
-  };
+  }, [selectedTasks, user.usuarioId, completeUserTasksBulk, fetchTasks, toggleSelectionMode]);
 
-  const handleBulkDelete = () => {
-    toggleSelectionMode();
+  const handleBulkDelete = useCallback(() => {
 
     if (selectedTasks.length <= 1) {
-      showMessageWarning('Selecione pelo menos duas tarefas para excluir.')
-      return
-    };
+      showMessageWarning('Selecione pelo menos duas tarefas para excluir.');
+      return;
+    }
 
     Alert.alert(
       'Excluir tarefas',
       `Deseja excluir ${selectedTasks.length} tarefa(s)?`,
       [
-        {
-          text: 'Cancelar',
-          style: 'cancel'
-        },
+        { text: 'Cancelar', style: 'cancel' },
         {
           text: 'Excluir',
           onPress: async () => {
-            setLocalLoading(true)
-
-            setTimeout(async () => {
-              await removeUserTasksBulk(user.usuarioId.toString(), selectedTasks);
-
-              await fetchTasks()
-
-              setLocalLoading(false)
-            }, 1000);
-          }
-        }
+            setLocalLoading(true);
+            await removeUserTasksBulk(user.usuarioId.toString(), selectedTasks);
+            await fetchTasks();
+            toggleSelectionMode();
+            setLocalLoading(false);
+          },
+        },
       ]
     );
+  }, [selectedTasks, user.usuarioId, removeUserTasksBulk, fetchTasks, toggleSelectionMode]);
 
-  };
-
-  const getStatusStyle = (status: string) => {
+  const getStatusStyle = useCallback((status: string) => {
     switch (status) {
       case 'Pendente':
         return { color: theme.status.pending };
@@ -143,136 +131,169 @@ export const TaskListScreen = () => {
       default:
         return { color: theme.text.primary };
     }
+  }, []);
+
+  const statusPriority: { [key: string]: number } = {
+    Pendente: 1,
+    Aberta: 2,
+    Concluída: 3,
   };
 
-  const TaskItem = ({ item }: { item: ITask }) => {
-    const [isDescriptionVisible, setDescriptionVisible] = useState(false);
-    const scaleAnim = useState(new Animated.Value(1))[0];
+  let filteredAndSortedTasks = localTasks;
+  if (filter !== 'Todas') {
+    filteredAndSortedTasks = localTasks.filter(task => task.status === filter);
+  }
+  filteredAndSortedTasks = filteredAndSortedTasks.sort((a, b) => {
+    const priorityA = statusPriority[a.status] || 4;
+    const priorityB = statusPriority[b.status] || 4;
+    if (priorityA !== priorityB) {
+      return priorityA - priorityB;
+    }
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
 
-    const handleLongPress = () => {
-      if (!isSelectionMode) {
-        toggleSelectionMode();
-      }
-      toggleTaskSelection(item.id);
-      Animated.sequence([
-        Animated.timing(scaleAnim, {
-          toValue: 0.95,
-          duration: 100,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 100,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    };
+  const TaskItem = useCallback(
+    ({ item }: { item: ITask }) => {
+      const [isDescriptionVisible, setDescriptionVisible] = useState(false);
+      const scaleAnim = useState(new Animated.Value(1))[0];
 
-    const handlePress = () => {
-      if (isSelectionMode) {
+      const handleLongPress = () => {
+        if (!isSelectionMode) {
+          toggleSelectionMode();
+        }
         toggleTaskSelection(item.id);
-      } else {
-        setDescriptionVisible(!isDescriptionVisible);
-      }
-    };
+        Animated.sequence([
+          Animated.timing(scaleAnim, {
+            toValue: 0.95,
+            duration: 100,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleAnim, {
+            toValue: 1,
+            duration: 100,
+            useNativeDriver: true,
+          }),
+        ]).start();
+      };
 
-    const handleDeleteTask = async () => {
-      setLocalLoading(true)
+      const handlePress = async () => {
 
-      setTimeout(async () => {
+        if (isDescriptionVisible && item.status === TaskStatus.Pendente) {
+          await handleOpenTask()
+        }
+
+        if (isSelectionMode) {
+          toggleTaskSelection(item.id);
+        } else {
+
+          setDescriptionVisible(!isDescriptionVisible);
+        }
+      };
+
+      const handleDeleteTask = async () => {
+        setLocalLoading(true);
         await removeUserTask(user.usuarioId.toString(), item.id);
+        await fetchTasks();
+        setLocalLoading(false);
+      };
 
-        await fetchTasks()
-
-        setLocalLoading(false)
-      }, 1000);
-    };
-
-    const handleCompleteTask = () => {
-
-      setLocalLoading(true)
-
-
-      setTimeout(async () => {
+      const handleCompleteTask = async () => {
+        setLocalLoading(true);
         await completeUserTask(user.usuarioId.toString(), item.id);
+        await fetchTasks();
+        setLocalLoading(false);
+      };
 
-        await fetchTasks()
+      const handleOpenTask = async () => {
+        await openUserTask(user.usuarioId.toString(), item.id);
+      };
 
-        setLocalLoading(false)
-      }, 1000);
-
-
-    };
-
-    return (
-      <Animated.View style={[styles.taskContainer, {
-        transform: [{ scale: scaleAnim }],
-        backgroundColor: selectedTasks.includes(item.id) ? theme.shape.surface : '#fff',
-      }]}>
-        <TouchableOpacity
-          onPress={handlePress}
-          onLongPress={handleLongPress}
-          activeOpacity={0.7}
+      return (
+        <Animated.View
+          style={[
+            styles.taskContainer,
+            {
+              transform: [{ scale: scaleAnim }],
+              backgroundColor: selectedTasks.includes(item.id) ? theme.shape.surface : '#fff',
+            },
+          ]}
         >
-          <View style={styles.taskHeader}>
-            <TextCustom style={styles.taskTitle}>{item.title}</TextCustom>
-            {!isSelectionMode && (
-              <Ionicons
-                name={isDescriptionVisible ? 'chevron-up' : 'chevron-down'}
-                size={24}
-                color={theme.text.primary}
-              />
-            )}
-            {isSelectionMode && (
-              <Ionicons
-                name={selectedTasks.includes(item.id) ? 'checkbox' : 'square-outline'}
-                size={24}
-                color={theme.primary.main}
-              />
-            )}
-          </View>
-          <TextCustom style={styles.taskStatus}>
-            Status: <TextCustom style={getStatusStyle(item.status)}> {item.status}</TextCustom>
-          </TextCustom>
-          <TextCustom style={styles.taskCreatedAt}>
-            Criado em: {new Date(item.createdAt).toLocaleString('pt-BR', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
-          </TextCustom>
-          {isDescriptionVisible && !isSelectionMode && (
-            <View style={styles.expandedContent}>
-              <TextCustom style={styles.taskDescription}>{item.description}</TextCustom>
-              <View style={styles.buttonContainer}>
-
-                <TouchableOpacity style={styles.button} onPress={handleCompleteTask}>
-                  <CircleCheckBig size={24} color={theme.signal.success} />
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.button}
-                  onPress={() => handleDeleteTask()}>
-                  <Trash2 size={24} color={theme.signal.danger} />
-                </TouchableOpacity>
-              </View>
+          <TouchableOpacity onPress={handlePress} onLongPress={handleLongPress} activeOpacity={0.7}>
+            <View style={styles.taskHeader}>
+              <TextCustom style={styles.taskTitle}>{item.title}</TextCustom>
+              {!isSelectionMode && (
+                <Ionicons
+                  name={isDescriptionVisible ? 'chevron-up' : 'chevron-down'}
+                  size={24}
+                  color={theme.text.primary}
+                />
+              )}
+              {isSelectionMode && (
+                <Ionicons
+                  name={selectedTasks.includes(item.id) ? 'checkbox' : 'square-outline'}
+                  size={24}
+                  color={theme.primary.main}
+                />
+              )}
             </View>
-          )}
-        </TouchableOpacity>
-      </Animated.View>
-    );
-  };
+            <TextCustom style={styles.taskStatus}>
+              Status: <TextCustom style={getStatusStyle(item.status)}> {item.status}</TextCustom>
+            </TextCustom>
+            <TextCustom style={styles.taskCreatedAt}>
+              Criado em:{' '}
+              {new Date(item.createdAt).toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </TextCustom>
+            {isDescriptionVisible && !isSelectionMode && (
+              <View style={styles.expandedContent}>
+                <TextCustom style={styles.taskDescription}>{item.description}</TextCustom>
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity style={styles.button} onPress={handleCompleteTask}>
+                    <CircleCheckBig size={24} color={theme.signal.success} />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.button} onPress={handleDeleteTask}>
+                    <Trash2 size={24} color={theme.signal.danger} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          </TouchableOpacity>
+        </Animated.View>
+      );
+    },
+    [isSelectionMode, selectedTasks, toggleSelectionMode, toggleTaskSelection, getStatusStyle, user.usuarioId, fetchTasks]
+  );
 
-  const reorganizedTAsks = localTasks ? localTasks?.sort((a, b) => {
-    const dateA = new Date(a.createdAt);
-    const dateB = new Date(b.createdAt);
-    return dateB.getTime() - dateA.getTime();
-  }) : []
+  const renderFilterButton = (filterType: 'Todas' | 'Pendente' | 'Aberta' | 'Concluída') => (
+    <TouchableOpacity
+      key={filterType}
+      style={[styles.filterButton, filter === filterType && styles.filterButtonActive]}
+      onPress={() => {
+        setFilter(filterType);
+        const xPosition = filterButtonPositions[filterType] || 0;
+        scrollViewRef.current?.scrollTo({ x: xPosition - 16, animated: true });
+      }}
+      onLayout={(event) => {
+        const { x } = event.nativeEvent.layout;
+        setFilterButtonPositions(prev => ({ ...prev, [filterType]: x }));
+      }}
+    >
+      <TextCustom
+        style={[styles.filterButtonText, filter === filterType ? styles.filterButtonTextActive : {}]}
+      >
+        {filterType}
+      </TextCustom>
+    </TouchableOpacity>
+  );
 
   return (
     <>
-      {!reorganizedTAsks || localLoading && (
+      {localLoading && (
         <View
           style={{
             position: 'absolute',
@@ -298,66 +319,78 @@ export const TaskListScreen = () => {
           <View style={styles.headerContainer}>
             <View>
               <TextCustom style={styles.title}>Minhas Tarefas</TextCustom>
-              <TextCustom >Quantidade: {reorganizedTAsks?.length}</TextCustom>
-
+              <TextCustom>Quantidade: {filteredAndSortedTasks.length}</TextCustom>
             </View>
-
             {isSelectionMode && (
               <TouchableOpacity onPress={toggleSelectionMode}>
                 <TextCustom style={styles.cancelButton}>Cancelar</TextCustom>
               </TouchableOpacity>
             )}
           </View>
+          <View>
+
+            <ScrollView
+              ref={scrollViewRef}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.filterContainer}
+              contentContainerStyle={styles.filterContent}
+            >
+              {['Todas', 'Pendente', 'Aberta', 'Concluída'].map(filterType =>
+                renderFilterButton(filterType as 'Todas' | 'Pendente' | 'Aberta' | 'Concluída')
+              )}
+            </ScrollView>
+          </View>
 
           <FlatList
             showsVerticalScrollIndicator={false}
-            data={reorganizedTAsks}
+            data={filteredAndSortedTasks}
             renderItem={({ item }) => <TaskItem item={item} />}
             keyExtractor={item => item.id}
             style={styles.list}
             ListEmptyComponent={
               <TextCustom style={styles.emptyText}>Nenhuma tarefa encontrada</TextCustom>
             }
+            initialNumToRender={10}
+            maxToRenderPerBatch={10}
+            windowSize={5}
+            removeClippedSubviews
           />
           {isSelectionMode && (
-            <Animated.View style={[styles.actionBar, {
-              opacity: actionBarAnim,
-              transform: [{
-                translateY: actionBarAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [100, 0],
-                }),
-              }],
-            }]}>
+            <Animated.View
+              style={[
+                styles.actionBar,
+                {
+                  opacity: actionBarAnim,
+                  transform: [
+                    {
+                      translateY: actionBarAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [100, 0],
+                      }),
+                    },
+                  ],
+                },
+              ]}
+            >
               <TextCustom style={styles.selectedCount}>
                 {selectedTasks.length} selecionada{selectedTasks.length !== 1 ? 's' : ''}
               </TextCustom>
               <View style={styles.actionButtons}>
-
-
                 <TouchableOpacity
                   disabled={selectedTasks.length === 0}
-                  style={[styles.button, {
-                    opacity: selectedTasks.length === 0 ? 0.5 : 1
-                  }]}
-                  onPress={handleBulkComplete}>
-
+                  style={[styles.button, { opacity: selectedTasks.length === 0 ? 0.5 : 1 }]}
+                  onPress={handleBulkComplete}
+                >
                   <CircleCheckBig size={24} color={theme.signal.success} />
                 </TouchableOpacity>
-
                 <TouchableOpacity
                   disabled={selectedTasks.length === 0}
-                  style={[
-                    styles.button,
-                    {
-                      opacity: selectedTasks.length === 0 ? 0.5 : 1
-                    }
-                  ]}
-                  onPress={handleBulkDelete}>
-
+                  style={[styles.button, { opacity: selectedTasks.length === 0 ? 0.5 : 1 }]}
+                  onPress={handleBulkDelete}
+                >
                   <Trash2 size={24} color={theme.signal.danger} />
                 </TouchableOpacity>
-
               </View>
             </Animated.View>
           )}
@@ -385,6 +418,31 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: theme.signal.danger,
     fontWeight: '600',
+  },
+  filterContainer: {
+    marginBottom: 16,
+  },
+  filterContent: {
+    paddingHorizontal: 16,
+    gap: 8,
+
+  },
+  filterButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: '#f3f4f6',
+  },
+  filterButtonActive: {
+    backgroundColor: theme.primary.main,
+  },
+  filterButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.text.primary,
+  },
+  filterButtonTextActive: {
+    color: '#fff',
   },
   list: {
     flex: 1,
@@ -467,19 +525,5 @@ const styles = StyleSheet.create({
   actionButtons: {
     flexDirection: 'row',
     gap: 12,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    gap: 8,
-    opacity: 0.9,
-  },
-  actionButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
   },
 });

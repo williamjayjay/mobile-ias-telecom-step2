@@ -26,7 +26,11 @@ This application is a challenge for mobile developers, focused on creating a sim
 
 ## 🎥 VideoCase
 
-https://github.com/user-attachments/assets/3fb0f5c2-563a-4733-a0f1-cb563c364ea5
+<p align="center">
+  <video src="https://github.com/user-attachments/assets/3fb0f5c2-563a-4733-a0f1-cb563c364ea5" controls loop muted autoplay style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+    Your browser does not support the video tag.
+  </video>
+</p>
 
 
 ## 🥶 About the Project

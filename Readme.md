@@ -21,7 +21,7 @@ This application is a challenge for mobile developers, focused on creating a sim
 </p>
 
 <p align="center">
-<img alt="app_expo_cars_list" src="github/assets/cover.png" />
+<img alt="cover_app_mobiletelecom" src=".github/assets/cover.png" />
 </p>
 
 ## 🎥 VideoCase

@@ -1,4 +1,4 @@
-name: CI/CD
+name: CI/CD__DEV
 
 on:
   push:
@@ -22,13 +22,15 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Run Tests
-        run: npm test
+      # - name: Run lint
+      #   run: npm run lint
+
+      - name: Run tests
+        run: npm run test
 
   CD:
     name: Continuous Delivery
     runs-on: ubuntu-latest
-
     needs: CI
 
     steps:
@@ -40,14 +42,26 @@ jobs:
         with:
           node-version: 20.x
 
-      - name: Setup EAS
+      - name: Setup EAS CLI and login
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
-          token: ${{ secrets.EAS_EXPO_TOKEN_TEST }}
+          token: ${{ secrets.TOKEN_LOGIN_EAS }}
 
-      - name: Install dependencies again
+      - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Build
+      - name: Push SECRETS_CLIENT_APP_TELECOM_API_AUTH to Expo EAS
+        run: eas env:create --name EXPO_PUBLIC_CLIENT_APP_TELECOM_API_AUTH --value "${{ secrets.SECRETS_CLIENT_APP_TELECOM_API_AUTH }}" --visibility=plaintext --environment=preview --non-interactive
+
+      - name: Push SECRETS_CLIENT_APP_TELECOM_API_TOKEN to Expo EAS
+        run: eas env:create --name EXPO_PUBLIC_CLIENT_APP_TELECOM_API_TOKEN --value "${{ secrets.SECRETS_CLIENT_APP_TELECOM_API_TOKEN }}" --visibility=plaintext --environment=preview --non-interactive
+
+      - name: Push SECRETS_CLIENT_APP_TELECOM_CLIENT_ID to Expo EAS
+        run: eas env:create --name EXPO_PUBLIC_CLIENT_APP_TELECOM_CLIENT_ID --value "${{ secrets.SECRETS_CLIENT_APP_TELECOM_CLIENT_ID }}" --visibility=plaintext --environment=preview --non-interactive
+
+      - name: Push SECRETS_CLIENT_APP_TELECOM_CLIENT_SECRET to Expo EAS
+        run: eas env:create --name EXPO_PUBLIC_CLIENT_APP_TELECOM_CLIENT_SECRET --value "${{ secrets.SECRETS_CLIENT_APP_TELECOM_CLIENT_SECRET }}" --visibility=plaintext --environment=preview --non-interactive
+
+      - name: Run EAS Build
         run: eas build --platform android --profile preview --non-interactive --no-wait

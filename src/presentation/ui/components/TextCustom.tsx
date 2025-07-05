@@ -9,12 +9,12 @@ interface CustomTextProps extends TextProps {
 
 const TextCustom: React.FC<CustomTextProps> = ({
   children,
-  customNumberOfLines = 1,
+  customNumberOfLines = 0,
   style,
   ...props
 }) => {
 
-  const baseStyle: TextStyle = { lineHeight: 35 };
+  const baseStyle: TextStyle = {};
 
   return (
     <Text

@@ -1,14 +1,25 @@
 import React, { useState } from 'react';
-import { View, Text, Button, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
 import { useWelcomeHook } from './hooks';
 import { theme } from '@/presentation/ui/styles/colorsTheme';
 import { SafeAreaContainer } from '@/presentation/ui/components/SafeAreaContainer';
 import IASLogo from '@/assets/logo-ias.svg';
+import { TextCustom } from '@/presentation/ui/components/TextCustom';
 
 export function WelcomeScreen() {
   const [loading, setLoading] = useState(false);
 
   const { handleLogin } = useWelcomeHook();
+
+  const localHandleLogin = async () => {
+    setLoading(true)
+    const result = await handleLogin()
+
+    if (!result) {
+      setLoading(false)
+      return;
+    }
+  }
 
   return (
     <SafeAreaContainer
@@ -26,13 +37,28 @@ export function WelcomeScreen() {
           style={{ marginBottom: 20 }}
         />
 
-        <Text style={styles.title}>IAS Tarefas</Text>
-        <Text style={styles.subtitle}>
+        <TextCustom style={styles.title}>IAS Tarefas</TextCustom>
+        <TextCustom style={styles.subtitle}>
           Você está acessando{'\n'}IAS [App de tarefas]
-        </Text>
-        <Button title="Acessar" onPress={handleLogin} disabled={loading} />
-        {loading && <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />}
-        <Text style={styles.copyright}>© 2025 Interfocus Tecnologia. Todos os direitos reservados.</Text>
+        </TextCustom>
+
+
+        <TouchableOpacity
+          disabled={loading}
+          style={{
+            backgroundColor: theme.primary.main, borderRadius: 4, height: 42, justifyContent: 'center', alignItems: 'center', width: 160,
+            opacity: loading ? 0.7 : 1
+          }}
+          onPress={localHandleLogin}
+        >
+          {loading ? (
+            <ActivityIndicator style={{}} size="small" color={theme.shape.surface} />
+          ) : (
+            <TextCustom style={{ color: theme.shape.surface, fontSize: 16, fontWeight: 'bold' }}>Fazer Login</TextCustom>
+          )}
+        </TouchableOpacity>
+
+        <TextCustom style={styles.copyright}>© 2025 Interfocus Tecnologia. Todos os direitos reservados.</TextCustom>
       </View>
     </SafeAreaContainer>
 

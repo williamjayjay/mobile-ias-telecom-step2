@@ -20,4 +20,9 @@ export const theme = {
     primary: "#333333",
     secondary: "#666666",
   },
+  status: {
+    pending: "#e09302",
+    open: "#0000ff",
+    completed: "#28A745",
+  }
 };

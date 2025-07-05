@@ -6,10 +6,22 @@ import { theme } from '@/presentation/ui/styles/colorsTheme';
 import { ChevronRight } from 'lucide-react-native';
 import React from 'react';
 import { View, ScrollView, Alert } from 'react-native';
-
+import Constants from 'expo-constants';
 export function AccountScreen() {
-  const { setUnAuthrotized, user } = useAuth();
-  const versionApp = 'v1.0.0 (1)'
+
+  const { contextUserData, logoutUser, clearUserData } = useAuth();
+
+
+
+  const { user } = contextUserData || {
+    user: {
+      usuarioId: '',
+      usuarioNome: '',
+      login: ''
+    }
+  };
+
+  const appVersion = `v${Constants.expoConfig?.version}` || 'Unknown';
 
   return (
     <SafeAreaContainer
@@ -88,7 +100,8 @@ export function AccountScreen() {
                 },
                 {
                   text: "Sair", onPress: () => {
-                    setUnAuthrotized()
+                    logoutUser()
+
                   }
                 }
               ]
@@ -115,7 +128,7 @@ export function AccountScreen() {
             textAlign: "center",
           }}
         >
-          {versionApp}
+          {appVersion}
         </TextCustom>
       </ScrollView>
 

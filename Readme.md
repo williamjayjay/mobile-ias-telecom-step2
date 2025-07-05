@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-Este aplicativo é um desafio para desenvolvedores mobile, com foco na criação de um app simples, porém funcional, que siga os padrões de codificação e organização utilizados na empresa. O objetivo é desenvolver um aplicativo de lista de tarefas que realiza login via OAuth2 no sistema da Interfocus, mantendo os dados salvos localmente no dispositivo, garantindo uma interface amigável e uma experiência fluida para o usuário.
+This application is a challenge for mobile developers, focused on creating a simple yet functional app that follows the coding and organizational standards used in the company. The goal is to develop a to-do list application that performs login via OAuth2 using the Interfocus system, while keeping data stored locally on the device, ensuring a user-friendly interface and a smooth user experience.
 </p>
 
 <p align="center">
@@ -84,21 +84,21 @@ To install and configure a local copy, follow these steps:
 
 Ensure the following steps are completed to run the app:
 
-1.**Clone the repository**:
+**1. Clone the repository**:
 ```sh
 git clone https://github.com/williamjayjay/mobile-ias-telecom-step2
 ```
 
-2.**Navigate to the root of the project mobile-ias-telecom**
+**2. Navigate to the root of the project mobile-ias-telecom**
 
-3. **Copy the example .env file::** 
+**3. Copy the example .env file::** 
 
-4.**Install the dependencies**:
+**4. Install the dependencies**:
   ```sh
   bun i
   ```
 
-5.**Run the application **:
+**5. Run the application**:
   ```sh
   bun start
   ```

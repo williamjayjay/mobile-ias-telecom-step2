@@ -10,24 +10,24 @@ interface EnvSchema {
 
 const envSchema = z.object({
   apiAuth: z.string({
-    required_error: 'A variável EXPO_PUBLIC_API_AUTH é obrigatória e deve ser uma URL válida (Ex. https://api.example.com)',
+    required_error: 'A variável EXPO_PUBLIC_CLIENT_APP_TELECOM_API_AUTH é obrigatória e deve ser uma URL válida (Ex. https://api.example.com)',
   }).url({
-    message: 'A variável EXPO_PUBLIC_API_AUTH é obrigatória e deve ser uma URL válida (Ex. https://api.example.com)',
+    message: 'A variável EXPO_PUBLIC_CLIENT_APP_TELECOM_API_AUTH é obrigatória e deve ser uma URL válida (Ex. https://api.example.com)',
   }),
   apiToken: z.string({
-    required_error: 'A variável EXPO_PUBLIC_API_TOKEN é obrigatória (Ex. abc123xyz789)',
+    required_error: 'A variável EXPO_PUBLIC_CLIENT_APP_TELECOM_API_TOKEN é obrigatória (Ex. abc123xyz789)',
   }).min(1, {
-    message: 'A variável EXPO_PUBLIC_API_TOKEN é obrigatória (Ex. abc123xyz789)',
+    message: 'A variável EXPO_PUBLIC_CLIENT_APP_TELECOM_API_TOKEN é obrigatória (Ex. abc123xyz789)',
   }),
   clientId: z.string({
-    required_error: 'A variável EXPO_PUBLIC_CLIENT_ID é obrigatória (Ex. cd49f429-f2f3-444f-b35d-7997cb35d358)',
+    required_error: 'A variável EXPO_PUBLIC_CLIENT_APP_TELECOM_CLIENT_ID é obrigatória (Ex. cd49f429-f2f3-444f-b35d-7997cb35d358)',
   }).min(1, {
-    message: 'A variável EXPO_PUBLIC_CLIENT_ID é obrigatória (Ex. cd49f429-f2f3-444f-b35d-7997cb35d358)',
+    message: 'A variável EXPO_PUBLIC_CLIENT_APP_TELECOM_CLIENT_ID é obrigatória (Ex. cd49f429-f2f3-444f-b35d-7997cb35d358)',
   }),
   clientSecret: z.string({
-    required_error: 'A variável EXPO_PUBLIC_CLIENT_SECRET é obrigatória (Ex. xyz789abc123)',
+    required_error: 'A variável EXPO_PUBLIC_CLIENT_APP_TELECOM_CLIENT_SECRET é obrigatória (Ex. xyz789abc123)',
   }).min(1, {
-    message: 'A variável EXPO_PUBLIC_CLIENT_SECRET é obrigatória (Ex. xyz789abc123)',
+    message: 'A variável EXPO_PUBLIC_CLIENT_APP_TELECOM_CLIENT_SECRET é obrigatória (Ex. xyz789abc123)',
   }),
 });
 
@@ -41,10 +41,10 @@ class EnvValidationError extends Error {
 const validateEnv = (env: Record<string, string | undefined>): EnvSchema => {
   // Map the input environment variables to the schema's expected keys
   const mappedEnv = {
-    apiAuth: env.EXPO_PUBLIC_API_AUTH,
-    apiToken: env.EXPO_PUBLIC_API_TOKEN,
-    clientId: env.EXPO_PUBLIC_CLIENT_ID,
-    clientSecret: env.EXPO_PUBLIC_CLIENT_SECRET,
+    apiAuth: env.EXPO_PUBLIC_CLIENT_APP_TELECOM_API_AUTH,
+    apiToken: env.EXPO_PUBLIC_CLIENT_APP_TELECOM_API_TOKEN,
+    clientId: env.EXPO_PUBLIC_CLIENT_APP_TELECOM_CLIENT_ID,
+    clientSecret: env.EXPO_PUBLIC_CLIENT_APP_TELECOM_CLIENT_SECRET,
   };
 
   const result = envSchema
@@ -69,10 +69,10 @@ const validateEnv = (env: Record<string, string | undefined>): EnvSchema => {
 
 const rootEnv: EnvSchema = process.env.NODE_ENV !== 'test'
   ? validateEnv({
-    EXPO_PUBLIC_API_AUTH: process.env.EXPO_PUBLIC_API_AUTH,
-    EXPO_PUBLIC_API_TOKEN: process.env.EXPO_PUBLIC_API_TOKEN,
-    EXPO_PUBLIC_CLIENT_ID: process.env.EXPO_PUBLIC_CLIENT_ID,
-    EXPO_PUBLIC_CLIENT_SECRET: process.env.EXPO_PUBLIC_CLIENT_SECRET,
+    EXPO_PUBLIC_CLIENT_APP_TELECOM_API_AUTH: process.env.EXPO_PUBLIC_CLIENT_APP_TELECOM_API_AUTH,
+    EXPO_PUBLIC_CLIENT_APP_TELECOM_API_TOKEN: process.env.EXPO_PUBLIC_CLIENT_APP_TELECOM_API_TOKEN,
+    EXPO_PUBLIC_CLIENT_APP_TELECOM_CLIENT_ID: process.env.EXPO_PUBLIC_CLIENT_APP_TELECOM_CLIENT_ID,
+    EXPO_PUBLIC_CLIENT_APP_TELECOM_CLIENT_SECRET: process.env.EXPO_PUBLIC_CLIENT_APP_TELECOM_CLIENT_SECRET,
   })
   : ({} as EnvSchema);
 

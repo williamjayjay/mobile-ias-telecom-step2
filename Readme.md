@@ -6,11 +6,11 @@
   <img alt="GitHub Top Language" src="https://img.shields.io/github/languages/top/williamjayjay/mobile-ias-telecom-step2" />
 
   <img alt="Repository size" src="https://img.shields.io/github/repo-size/williamjayjay/mobile-ias-telecom-step2">
-  
+
   <a href="https://github.com/williamjayjay/Github-Blog/commits/master">
     <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/williamjayjay/mobile-ias-telecom-step2">
   </a>
-    
+
    <a href="https://github.com/williamjayjay/mobile-ias-telecom-step2/stargazers">
     <img alt="Stargazers" src="https://img.shields.io/github/stars/williamjayjay/mobile-ias-telecom-step2?style=social">
   </a>
@@ -32,7 +32,6 @@ This application is a challenge for mobile developers, focused on creating a sim
   </video>
 </p>
 
-
 ## 🥶 About the Project
 
 I developed this project as part of a mobile developer challenge to improve my skills in React Native, navigation, and state management. The main goal was to create a functional and user-friendly to-do list app that follows best practices and industry standards.
@@ -41,31 +40,30 @@ I developed this project as part of a mobile developer challenge to improve my s
 
 **Application:** The app allows users to log in via OAuth2 using the Interfocus system through Expo Auth Session, manage their to-do tasks, and persist data locally using AsyncStorage. It features a responsive design and smooth user experience, leveraging tools like React Navigation with Tab Navigator, React Hook Form for form handling, and FlashMessage for user feedback. The codebase follows clean architecture principles and includes unit tests with Jest to ensure reliability and maintainability.
 
-## 🚀 Technologies  
+## 🚀 Technologies
 
-Key technologies used in this application:  
+Key technologies used in this application:
 
-- [Expo](https://expo.dev/)  
+- [Expo](https://expo.dev/)
 - [Typescript](https://www.typescriptlang.org)
-- [React Native](https://reactnative.dev/)  
-- [React](https://react.dev/)  
-- [React Navigation Native](https://reactnavigation.org/)  
-- [React Navigation Native Stack](https://reactnavigation.org/docs/stack-navigator/)  
-- [React Navigation Bottom Tabs](https://reactnavigation.org/docs/bottom-tab-navigator)  
-- [React Native Safe Area Context](https://github.com/th3rdwave/react-native-safe-area-context)  
-- [React Native Screens](https://github.com/software-mansion/react-native-screens)  
-- [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/)  
-- [React Native Async Storage](https://github.com/react-native-async-storage/async-storage)  
-- [Hookform Resolvers](https://react-hook-form.com/get-started/#SchemaValidation)  
-- [Zod](https://zod.dev/)  
-- [React Hook Form](https://react-hook-form.com/)  
-- [Lucide React Native](https://lucide.dev/docs/lucide-react-native)  
-- [React Native Flash Message](https://github.com/lucasferreira/react-native-flash-message)  
-- [React Native SVG](https://github.com/software-mansion/react-native-svg)  
-- [Jest](https://jestjs.io/)  
-- [Jest Expo](https://github.com/expo/jest-expo)  
-- [Expo Auth Session](https://docs.expo.dev/versions/latest/sdk/auth-session/)  
-
+- [React Native](https://reactnative.dev/)
+- [React](https://react.dev/)
+- [React Navigation Native](https://reactnavigation.org/)
+- [React Navigation Native Stack](https://reactnavigation.org/docs/stack-navigator/)
+- [React Navigation Bottom Tabs](https://reactnavigation.org/docs/bottom-tab-navigator)
+- [React Native Safe Area Context](https://github.com/th3rdwave/react-native-safe-area-context)
+- [React Native Screens](https://github.com/software-mansion/react-native-screens)
+- [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/)
+- [React Native Async Storage](https://github.com/react-native-async-storage/async-storage)
+- [Hookform Resolvers](https://react-hook-form.com/get-started/#SchemaValidation)
+- [Zod](https://zod.dev/)
+- [React Hook Form](https://react-hook-form.com/)
+- [Lucide React Native](https://lucide.dev/docs/lucide-react-native)
+- [React Native Flash Message](https://github.com/lucasferreira/react-native-flash-message)
+- [React Native SVG](https://github.com/software-mansion/react-native-svg)
+- [Jest](https://jestjs.io/)
+- [Jest Expo](https://github.com/expo/jest-expo)
+- [Expo Auth Session](https://docs.expo.dev/versions/latest/sdk/auth-session/)
 
 ## CI/CD Details
 
@@ -79,7 +77,6 @@ To run the tests, simply execute the following command:
 bun run test
 ```
 
-
 ## Getting Started
 
 To install and configure a local copy, follow these steps:
@@ -89,28 +86,49 @@ To install and configure a local copy, follow these steps:
 Ensure the following steps are completed to run the app:
 
 **1. Clone the repository**:
+
 ```sh
 git clone https://github.com/williamjayjay/mobile-ias-telecom-step2
 ```
 
 **2. Navigate to the root of the project mobile-ias-telecom**
 
-**3. Copy the example .env file::** 
+**3. Copy the example .env file.**
 
-**4. Install the dependencies**:
-  ```sh
-  bun i
-  ```
+**4. Install the dependencies:**
 
-**5. Run the application**:
-  ```sh
-  bun start
-  ```
-   or with script 
-  ```sh
-  bun tu
-  ```
+```sh
+bun i
+```
 
+**5. Run the application:**
+
+```sh
+bun start
+```
+
+or with script
+
+```sh
+bun tu
+```
+
+**6. Accout to access:**
+
+Email to login:
+
+```sh
+mobile1@teste.com
+```
+
+Password:
+
+```sh
+@mobile2025
+```
+
+**7. Locate the APK:**
+The generated APK for the Android app can be found in the apk directory within the project root.
 
 ## Roadmap
 

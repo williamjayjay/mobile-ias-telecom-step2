@@ -24,7 +24,6 @@ export const styles = StyleSheet.create({
     marginBottom: 16,
   },
   filterContent: {
-    paddingHorizontal: 16,
     gap: 8,
   },
   filterButton: {

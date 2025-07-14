@@ -11,7 +11,8 @@
     "test": "jest",
     "pb": "npx expo prebuild --platform android && npx expo run:android",
     "pbi": "npx expo prebuild --platform ios && npx expo run:ios",
-    "eas-local": "eas build --platform android --profile preview --local"
+    "eas-local": "eas build --platform android --profile preview --local",
+    "legacy": "npm i --legacy-peer-deps"
   },
   "jest": {
     "preset": "jest-expo",
@@ -40,7 +41,7 @@
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/react-native": "^13.2.0",
-    "expo": "53.0.17",
+    "expo": "53.0.19",
     "expo-auth-session": "~6.2.1",
     "expo-crypto": "~14.1.5",
     "expo-secure-store": "~14.2.3",

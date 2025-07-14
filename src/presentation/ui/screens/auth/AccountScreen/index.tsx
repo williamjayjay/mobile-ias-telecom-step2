@@ -9,9 +9,7 @@ import { View, ScrollView, Alert } from 'react-native';
 import Constants from 'expo-constants';
 export function AccountScreen() {
 
-  const { contextUserData, logoutUser, clearUserData } = useAuth();
-
-
+  const { contextUserData, logoutUser } = useAuth();
 
   const { user } = contextUserData || {
     user: {

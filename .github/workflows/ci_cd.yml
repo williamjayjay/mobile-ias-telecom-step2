@@ -3,7 +3,7 @@ name: CI/CD__DEV
 on:
   push:
     branches:
-      - develop
+      - master
 
 jobs:
   CI:

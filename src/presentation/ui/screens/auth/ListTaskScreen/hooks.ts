@@ -1,4 +1,3 @@
-// src/presentation/ui/screens/TaskList/useTaskListScreenHook.ts
 import { useState, useMemo, useCallback, useRef } from 'react';
 import { Animated, Alert } from 'react-native';
 import { useAuth } from '@/presentation/ui/context/AuthContext';

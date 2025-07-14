@@ -56,7 +56,7 @@ export const useCreateTaskScreenHook = () => {
 
       await addUserTask(user.usuarioId.toString(), newTask);
       showMessageSuccess('Tarefa criada com sucesso!');
-      Keyboard.dismiss(); // Close the keyboard on successful task creation
+      Keyboard.dismiss();
       reset();
       navigation.goBack();
     } catch (error) {

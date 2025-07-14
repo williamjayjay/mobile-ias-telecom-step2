@@ -1,4 +1,3 @@
-// src/presentation/ui/screens/CreateTask/CreateTaskScreen.tsx
 import React from 'react';
 import {
   View,

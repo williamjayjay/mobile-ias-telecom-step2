@@ -1,4 +1,3 @@
-// src/presentation/ui/screens/TaskList/TaskListScreen.tsx
 import React, { useCallback } from 'react';
 import { View, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Animated, ScrollView } from 'react-native';
 import { SafeAreaContainer } from '@/presentation/ui/components/SafeAreaContainer';
